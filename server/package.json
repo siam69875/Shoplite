@@ -1,0 +1,25 @@
+{
+  "name": "shoplite-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "dev": "node --watch --disable-warning=ExperimentalWarning src/index.js",
+    "start": "node --disable-warning=ExperimentalWarning src/index.js",
+    "seed": "node --disable-warning=ExperimentalWarning src/db/seed.js",
+    "test": "BCRYPT_ROUNDS=4 node --disable-warning=ExperimentalWarning --test --test-concurrency=1 \"test/**/*.test.js\"",
+    "depgraph": "depcruise src --no-config --include-only '^src' --output-type json > depgraph.json",
+    "depgraph:mermaid": "depcruise src --no-config --include-only '^src' --collapse '^src/modules/[^/]+' --output-type mermaid > depgraph.mmd"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "dependency-cruiser": "^17.4.3",
+    "supertest": "^7.3.1"
+  }
+}
