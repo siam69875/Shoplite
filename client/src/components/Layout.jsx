@@ -4,6 +4,7 @@ import { LayoutDashboard, LogOut, Package, Phone, ShoppingBag, Truck, User } fro
 import { api } from '../api.js';
 import { metaFor } from '../catalogMeta.js';
 import { useSession } from '../session.jsx';
+import { Logo } from './Logo.jsx';
 import SearchBox from './SearchBox.jsx';
 
 function CartButton() {
@@ -53,8 +54,7 @@ function Header() {
       </div>
       <div className="container header-main">
         <Link to="/" className="logo" data-testid="logo">
-          <span className="logo-mark">S</span>
-          <span className="logo-text">ShopLite<small>Bangladesh</small></span>
+          <Logo />
         </Link>
         <SearchBox />
         <nav className="header-actions">
@@ -115,7 +115,7 @@ function Footer() {
     <footer className="site-footer">
       <div className="container footer-grid">
         <div>
-          <div className="logo logo-footer"><span className="logo-mark">S</span><span className="logo-text">ShopLite<small>Bangladesh</small></span></div>
+          <div className="logo logo-footer"><Logo /></div>
           <p className="muted">Your friendly online bazaar, from Rupganj Jamdani to Bogura doi, delivered to all 64 districts.</p>
           <div className="pay-badges">
             <span className="pay-badge bkash">bKash</span>

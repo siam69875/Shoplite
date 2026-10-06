@@ -166,12 +166,8 @@ legend + * { clear: both; }
 .header-main { display: flex; align-items: center; gap: 22px; padding-top: 12px; padding-bottom: 12px; }
 .logo { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); }
 .logo:hover { color: var(--ink); }
-.logo-mark {
-  width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; font-weight: 800; font-size: 1.35rem; color: #fff;
-  background: linear-gradient(135deg, var(--green-400), var(--green) 55%, var(--red) 140%);
-  box-shadow: 0 6px 14px rgba(0, 106, 78, 0.35); position: relative;
-}
-.logo-mark::after { content: ''; position: absolute; width: 12px; height: 12px; border-radius: 50%; background: var(--red); right: -3px; top: -3px; border: 2px solid #fff; }
+.logo-mark-svg { flex-shrink: 0; filter: drop-shadow(0 6px 10px rgba(0, 106, 78, 0.3)); transition: transform 0.3s var(--ease); }
+.logo:hover .logo-mark-svg { transform: rotate(-8deg) scale(1.06); }
 .logo-text { display: flex; flex-direction: column; font-weight: 800; font-size: 1.3rem; line-height: 1; letter-spacing: -0.02em;
   background: linear-gradient(90deg, var(--green), var(--green-400), var(--red), var(--green)); background-size: 300% 100%;
   -webkit-background-clip: text; background-clip: text; color: transparent; animation: gradientShift 8s ease infinite; }
