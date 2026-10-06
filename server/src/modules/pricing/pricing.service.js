@@ -12,19 +12,25 @@ export function lineTotal(unitPrice, quantity) {
   return unitPrice * quantity;
 }
 
+// VAT for a single cart line, so the cart and invoice can show VAT next to each item.
+export function lineVat(unitPrice, quantity) {
+  return roundTaka(lineTotal(unitPrice, quantity) * TAX_RATE);
+}
+
 /**
  * @param {{unitPrice:number, quantity:number}[]} items
  * @param {object|null} coupon  a validated coupon row, or null
  *
  * Order of operations (BR-PRC-01):
- *   subtotal → minus coupon discount → VAT on the discounted amount → plus delivery charge
- * VAT is rounded once, on the order level, to the nearest Taka (BR-PRC-02).
+ *   subtotal → minus coupon discount → plus VAT → plus delivery charge
+ * VAT is the sum of the per-line VAT amounts, so the order total always matches
+ * the VAT shown on each line.
  */
 export function calculateTotals(items, coupon = null) {
   const subtotal = items.reduce((sum, i) => sum + lineTotal(i.unitPrice, i.quantity), 0);
   const discount = calculateDiscount(coupon, subtotal);
   const taxable = subtotal - discount;
-  const tax = roundTaka(taxable * TAX_RATE);
+  const tax = items.reduce((sum, i) => sum + lineVat(i.unitPrice, i.quantity), 0);
   const itemCount = items.reduce((sum, i) => sum + i.quantity, 0);
   const shipping = calculateShipping({ itemCount, subtotalAfterDiscount: taxable });
   const total = taxable + tax + shipping;

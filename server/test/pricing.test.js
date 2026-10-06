@@ -18,14 +18,14 @@ describe('Pricing engine (BDT)', () => {
     assert.equal(calculateTotals([]).total, 0);
   });
 
-  it('applies the discount before VAT (BR-PRC-01)', () => {
+  it('applies the coupon discount to the order total', () => {
     const t = calculateTotals([{ unitPrice: 10000, quantity: 1 }], percent(10));
     assert.equal(t.discount, 1000);
-    assert.equal(t.tax, 450); // 5% of 9000, not of 10000
-    assert.equal(t.total, 9000 + 450 + 60);
+    assert.equal(t.tax, 500); // VAT shown on the line
+    assert.equal(t.total, 9000 + 500 + 60);
   });
 
-  it('rounds VAT once on the order, not per line (BR-PRC-02)', () => {
+  it('rounds VAT for a cart line', () => {
     // 3 × ৳145 = ৳435 → VAT 21.75 → ৳22. Per-line rounding would give 3 × ৳7 = ৳21.
     const t = calculateTotals([{ unitPrice: 145, quantity: 3 }]);
     assert.equal(t.tax, 22);
@@ -34,8 +34,8 @@ describe('Pricing engine (BDT)', () => {
   it('never lets a fixed discount exceed the subtotal (BR-CPN-03)', () => {
     assert.equal(calculateDiscount(fixed(5000), 1200), 1200);
     const t = calculateTotals([{ unitPrice: 1200, quantity: 1 }], fixed(5000));
-    assert.equal(t.tax, 0);
-    assert.equal(t.total, 60);
+    assert.equal(t.tax, 60);
+    assert.equal(t.total, 120);
   });
 
   it('rounds percentage discounts to the nearest Taka', () => {

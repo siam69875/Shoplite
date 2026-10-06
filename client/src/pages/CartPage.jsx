@@ -62,7 +62,7 @@ export default function CartPage() {
               <Link to={`/products/${item.productId}`} className="cart-thumb" style={{ background: metaFor(item.category).tile }}>{item.image}</Link>
               <div className="cart-item-info">
                 <Link to={`/products/${item.productId}`} className="cart-item-name">{item.name}</Link>
-                <span className="muted small">{money(item.unitPrice)} each</span>
+                <span className="muted small">{money(item.unitPrice)} each · VAT {money(item.vat)}</span>
                 {!item.available && <span className="badge stock-out_of_stock">Only {item.stock} in stock</span>}
               </div>
               <QtyStepper

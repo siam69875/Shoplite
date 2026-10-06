@@ -4,7 +4,7 @@ import { many, one, run } from '../../db/connection.js';
 import { assertProductExists } from '../catalog/catalog.service.js';
 import { validateCoupon } from '../coupons/coupons.service.js';
 import { assertAvailable } from '../inventory/inventory.service.js';
-import { calculateTotals, lineTotal } from '../pricing/pricing.service.js';
+import { calculateTotals, lineTotal, lineVat } from '../pricing/pricing.service.js';
 
 // BR-CART-01: quantity per item must be between 1 and 10.
 export const MAX_QTY_PER_ITEM = 10;
@@ -30,6 +30,7 @@ function loadItems(userId) {
     unitPrice: r.price,
     quantity: r.quantity,
     lineTotal: lineTotal(r.price, r.quantity),
+    vat: lineVat(r.price, r.quantity),
     stock: r.stock,
     available: r.quantity <= r.stock,
   }));
