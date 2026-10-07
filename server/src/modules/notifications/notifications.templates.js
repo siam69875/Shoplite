@@ -1,3 +1,4 @@
+import { config } from '../../core/config.js';
 import { EVENTS } from '../../core/eventBus.js';
 import { formatMoney } from '../../core/money.js';
 import { pointsForOrder } from '../loyalty/loyalty.service.js';
@@ -32,5 +33,5 @@ const offerText = (o) => (o.type === 'PERCENT' ? `${o.value}% off` : `${formatMo
 export function welcomeTemplate(user) {
   const offer = welcomeOffer();
   const promo = offer ? ` Use code ${offer.code} for ${offerText(offer)} your first order.` : '';
-  return { subject: 'Welcome to ShopLite!', body: `Hi ${user.name}, your account is ready.${promo}` };
+  return { subject: `Welcome to ${config.store.name}!`, body: `Hi ${user.name}, your account is ready.${promo}` };
 }

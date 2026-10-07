@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { BadgePercent, Banknote, LayoutDashboard, Package, ReceiptText, ShoppingBag, Tag, Undo2, Users } from 'lucide-react';
-import { api, formatDate, money } from '../api.js';
+import { api, CURRENCY, formatDate, money } from '../api.js';
 import { metaFor } from '../catalogMeta.js';
 import { ErrorMessage, StatusBadge, StockBadge } from '../components/ui.jsx';
 import { useToast } from '../toast.jsx';
@@ -243,8 +243,8 @@ function Products() {
         <div className="row">
           <label>Name<input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} data-testid="product-name-input" /></label>
           <label>Category<input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} list="category-options" data-testid="product-category-input" /></label>
-          <label>Price (৳)<input value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} inputMode="numeric" data-testid="product-price-input" /></label>
-          <label>Original price (৳)<input value={form.originalPrice} onChange={(e) => setForm({ ...form, originalPrice: e.target.value })} inputMode="numeric" placeholder="optional" data-testid="product-original-price-input" /></label>
+          <label>Price ({CURRENCY})<input value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} inputMode="numeric" data-testid="product-price-input" /></label>
+          <label>Original price ({CURRENCY})<input value={form.originalPrice} onChange={(e) => setForm({ ...form, originalPrice: e.target.value })} inputMode="numeric" placeholder="optional" data-testid="product-original-price-input" /></label>
           {!editingId && <label>Stock<input value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} inputMode="numeric" data-testid="product-stock-input" /></label>}
           <label className="narrow-field">Icon<input value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} /></label>
         </div>
@@ -362,11 +362,11 @@ function Coupons() {
             Type
             <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })} data-testid="coupon-type-select">
               <option value="PERCENT">Percent</option>
-              <option value="FIXED">Fixed amount (৳)</option>
+              <option value="FIXED">Fixed amount ({CURRENCY})</option>
             </select>
           </label>
-          <label>{form.type === 'PERCENT' ? 'Percent' : 'Amount (৳)'}<input value={form.value} onChange={(e) => setForm({ ...form, value: e.target.value })} inputMode="numeric" data-testid="coupon-value-input" /></label>
-          <label>Min. order (৳)<input value={form.minSubtotal} onChange={(e) => setForm({ ...form, minSubtotal: e.target.value })} inputMode="numeric" /></label>
+          <label>{form.type === 'PERCENT' ? 'Percent' : `Amount (${CURRENCY})`}<input value={form.value} onChange={(e) => setForm({ ...form, value: e.target.value })} inputMode="numeric" data-testid="coupon-value-input" /></label>
+          <label>Min. order ({CURRENCY})<input value={form.minSubtotal} onChange={(e) => setForm({ ...form, minSubtotal: e.target.value })} inputMode="numeric" /></label>
           <label>Usage limit<input value={form.usageLimit} onChange={(e) => setForm({ ...form, usageLimit: e.target.value })} inputMode="numeric" /></label>
           <label>Expires<input type="datetime-local" value={form.expiresAt} onChange={(e) => setForm({ ...form, expiresAt: e.target.value })} /></label>
         </div>

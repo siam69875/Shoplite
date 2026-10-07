@@ -35,7 +35,7 @@ export default function RegisterPage() {
     <div className="container auth-page">
       <div className="auth-visual auth-visual-alt" aria-hidden="true">
         <span>🎁</span><span>🏏</span><span>🍵</span><span>🧸</span>
-        <h2>Join ShopLite</h2>
+        <h2>Join {store.name}</h2>
         <p>{store.welcomeOffer
           ? `Get ${offerText(store.welcomeOffer)} your first order with code ${store.welcomeOffer.code}, plus loyalty points on every purchase.`
           : 'Earn loyalty points on every purchase.'}</p>

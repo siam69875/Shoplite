@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ChevronRight, RotateCcw, ShoppingCart, Truck, Wallet, Zap } from 'lucide-react';
-import { api, formatDate } from '../api.js';
+import { api, formatDate, money } from '../api.js';
 import { metaFor } from '../catalogMeta.js';
 import ProductCarousel from '../components/ProductCarousel.jsx';
 import { ErrorMessage, Price, ProductArt, QtyStepper, SectionHeader, Stars, StockBadge } from '../components/ui.jsx';
@@ -96,7 +96,7 @@ export default function ProductPage() {
             {product.soldCount > 0 && <span className="muted">· {product.soldCount} sold</span>}
           </div>
           <Price product={product} size="lg" />
-          {product.discountPercent > 0 && <p className="save-line">You save ৳{(product.originalPrice - product.price).toLocaleString('en-IN')}</p>}
+          {product.discountPercent > 0 && <p className="save-line">You save {money(product.originalPrice - product.price)}</p>}
           <StockBadge product={product} />
           <p className="detail-description">{product.description}</p>
 
@@ -118,9 +118,9 @@ export default function ProductPage() {
           <p className="muted small">Max {store.maxQty} per customer per item.</p>
 
           <div className="delivery-info">
-            <div><Truck size={20} /><span><b>Delivery {store.delivery}</b><br /><span className="muted small">{store.deliveryDays} days, all over Bangladesh</span></span></div>
-            <div><Wallet size={20} /><span><b>bKash & cards</b><br /><span className="muted small">Secure payment</span></span></div>
-            <div><RotateCcw size={20} /><span><b>{store.refundDays}-day returns</b><br /><span className="muted small">Full refund after delivery</span></span></div>
+            <div><Truck size={20} /><span><b>Delivery {store.delivery}</b><br /><span className="muted small">{store.deliveryDays} days, all over {store.region}</span></span></div>
+            <div><Wallet size={20} /><span><b>{store.payWith}</b><br /><span className="muted small">Secure payment</span></span></div>
+            <div><RotateCcw size={20} /><span><b>{store.refundDays}-day returns</b><br /><span className="muted small">{store.refundNote}</span></span></div>
           </div>
         </div>
       </section>

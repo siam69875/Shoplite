@@ -11,5 +11,5 @@ if (one('SELECT COUNT(*) AS count FROM users').count === 0) {
 }
 
 createApp().listen(config.port, () => {
-  console.log(`ShopLite API running on http://localhost:${config.port}`);
+  console.log(`${config.store.name} API running on http://localhost:${config.port}`);
 });

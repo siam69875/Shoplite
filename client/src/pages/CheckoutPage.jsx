@@ -7,6 +7,9 @@ import { useSession } from '../session.jsx';
 import { useStoreInfo } from '../storeInfo.jsx';
 import { useToast } from '../toast.jsx';
 
+// Checkout shows a tab for every method the server accepts; each method has its own form below.
+const PAY_ICON = { BKASH: Smartphone, CARD: CreditCard };
+
 export default function CheckoutPage() {
   const store = useStoreInfo();
   const { user, refreshCart } = useSession();
@@ -15,7 +18,9 @@ export default function CheckoutPage() {
   const [cart, setCart] = useState(null);
   const [districts, setDistricts] = useState([]);
   const [address, setAddress] = useState({ fullName: user?.name ?? '', phone: '', line1: '', city: 'Dhaka', postalCode: '' });
-  const [method, setMethod] = useState('BKASH');
+  const [chosenMethod, setMethod] = useState(null);
+  const offered = store.paymentMethods.filter((m) => PAY_ICON[m.method]);
+  const method = offered.some((m) => m.method === chosenMethod) ? chosenMethod : offered[0]?.method;
   const [card, setCard] = useState({ cardNumber: '', expiry: '', cvc: '' });
   const [bkash, setBkash] = useState({ walletNumber: '', otp: '' });
   const [otpSent, setOtpSent] = useState(false);
@@ -81,18 +86,20 @@ export default function CheckoutPage() {
           <fieldset className="card">
             <legend><Lock size={18} /> Payment</legend>
             <div className="pay-tabs" role="tablist">
-              <button type="button" role="tab" aria-selected={method === 'BKASH'} className={`pay-tab bkash ${method === 'BKASH' ? 'active' : ''}`} onClick={() => setMethod('BKASH')} data-testid="pay-bkash">
-                <Smartphone size={20} /> bKash
-              </button>
-              <button type="button" role="tab" aria-selected={method === 'CARD'} className={`pay-tab ${method === 'CARD' ? 'active' : ''}`} onClick={() => setMethod('CARD')} data-testid="pay-card">
-                <CreditCard size={20} /> Card
-              </button>
+              {offered.map((m) => {
+                const Icon = PAY_ICON[m.method];
+                return (
+                  <button key={m.method} type="button" role="tab" aria-selected={method === m.method} className={`pay-tab ${m.method.toLowerCase()} ${method === m.method ? 'active' : ''}`} onClick={() => setMethod(m.method)} data-testid={`pay-${m.method.toLowerCase()}`}>
+                    <Icon size={20} /> {m.label}
+                  </button>
+                );
+              })}
             </div>
 
             {method === 'BKASH' ? (
               <div className="pay-panel bkash-panel">
                 <div className="row">
-                  {field(bkash, setBkash, 'walletNumber', 'bKash account number', { inputMode: 'tel', placeholder: '01XXXXXXXXX' })}
+                  {field(bkash, setBkash, 'walletNumber', `${store.methodInfo('BKASH').account} number`, { inputMode: 'tel', placeholder: '01XXXXXXXXX' })}
                   <label>
                     Verification code
                     <div className="otp-row">
@@ -128,7 +135,7 @@ export default function CheckoutPage() {
           <Totals totals={cart.totals} />
           <ErrorMessage error={error} />
           <button type="submit" className={`btn btn-block ${method === 'BKASH' ? 'btn-bkash' : 'btn-primary'}`} disabled={busy} data-testid="place-order">
-            {busy ? 'Processing…' : `Pay ${money(cart.totals.total)}${method === 'BKASH' ? ' with bKash' : ''}`}
+            {busy ? 'Processing…' : `Pay ${money(cart.totals.total)}${method === 'BKASH' ? ` with ${store.methodInfo(method).label}` : ''}`}
           </button>
           <p className="muted small center"><Lock size={12} /> Secure checkout. Demo payments only.</p>
         </aside>

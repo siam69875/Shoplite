@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { api } from '../api.js';
 import { ErrorMessage } from '../components/ui.jsx';
 import { useSession } from '../session.jsx';
+import { useStoreInfo } from '../storeInfo.jsx';
 import { useToast } from '../toast.jsx';
 
 const DEMO = [
@@ -12,6 +13,7 @@ const DEMO = [
 ];
 
 export default function LoginPage() {
+  const store = useStoreInfo();
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(false);
@@ -40,7 +42,7 @@ export default function LoginPage() {
     <div className="container auth-page">
       <div className="auth-visual" aria-hidden="true">
         <span>🛍️</span><span>🥻</span><span>📱</span><span>🍯</span>
-        <h2>Welcome back to ShopLite</h2>
+        <h2>Welcome back to {store.name}</h2>
         <p>Your favourite deshi products, one click away.</p>
       </div>
       <form className="card auth-form" onSubmit={submit} data-testid="login-form">

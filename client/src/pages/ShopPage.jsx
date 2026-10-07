@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Loader2, Search, SlidersHorizontal, X } from 'lucide-react';
-import { api } from '../api.js';
+import { api, CURRENCY, money } from '../api.js';
 import { metaFor } from '../catalogMeta.js';
 import ProductCard from '../components/ProductCard.jsx';
 import { ErrorMessage, Reveal, SkeletonGrid } from '../components/ui.jsx';
@@ -124,7 +124,7 @@ export default function ShopPage() {
             ))}
           </div>
 
-          <h4>Price (৳)</h4>
+          <h4>Price ({CURRENCY})</h4>
           <div className="price-range">
             <input inputMode="numeric" placeholder="Min" value={minPrice} onChange={(e) => setMinPrice(e.target.value.replace(/\D/g, ''))} aria-label="Minimum price" data-testid="min-price" />
             <span>–</span>
@@ -168,7 +168,7 @@ export default function ShopPage() {
             <div className="active-filters">
               {activeFilters.map((k) => (
                 <button key={k} type="button" className="filter-pill" onClick={() => { if (k === 'search') setSearch(''); if (k === 'minPrice') setMinPrice(''); if (k === 'maxPrice') setMaxPrice(''); update(k, ''); }}>
-                  {k === 'inStock' ? 'In stock' : k === 'onSale' ? 'On sale' : k === 'minPrice' ? `From ৳${params.get(k)}` : k === 'maxPrice' ? `Up to ৳${params.get(k)}` : params.get(k)}
+                  {k === 'inStock' ? 'In stock' : k === 'onSale' ? 'On sale' : k === 'minPrice' ? `From ${money(Number(params.get(k)))}` : k === 'maxPrice' ? `Up to ${money(Number(params.get(k)))}` : params.get(k)}
                   <X size={14} />
                 </button>
               ))}

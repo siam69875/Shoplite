@@ -5,6 +5,7 @@ import { api } from '../api.js';
 import { metaFor } from '../catalogMeta.js';
 import { useSession } from '../session.jsx';
 import { useStoreInfo } from '../storeInfo.jsx';
+import Logo from './Logo.jsx';
 import SearchBox from './SearchBox.jsx';
 
 function CartButton() {
@@ -49,14 +50,13 @@ function Header() {
     <header className="site-header">
       <div className="topbar">
         <div className="container topbar-inner">
-          <span><Truck size={14} /> Delivery all over Bangladesh in {store.deliveryDays} days · flat {store.delivery}</span>
-          <span className="topbar-right"><Phone size={14} /> Hotline {store.hotline} · Pay with <b className="bkash-text">bKash</b> or card</span>
+          <span><Truck size={14} /> Delivery all over {store.region} in {store.deliveryDays} days · flat {store.delivery}</span>
+          <span className="topbar-right"><Phone size={14} /> Hotline {store.hotline} · Pay with {store.payWith}</span>
         </div>
       </div>
       <div className="container header-main">
         <Link to="/" className="logo" data-testid="logo">
-          <span className="logo-mark">S</span>
-          <span className="logo-text">ShopLite<small>Bangladesh</small></span>
+          <Logo />
         </Link>
         <SearchBox />
         <nav className="header-actions">
@@ -118,12 +118,12 @@ function Footer() {
     <footer className="site-footer">
       <div className="container footer-grid">
         <div>
-          <div className="logo logo-footer"><span className="logo-mark">S</span><span className="logo-text">ShopLite<small>Bangladesh</small></span></div>
-          <p className="muted">Your friendly online bazaar, from Rupganj Jamdani to Bogura doi, delivered to all 64 districts.</p>
+          <div className="logo logo-footer"><Logo /></div>
+          <p className="muted">Your friendly online bazaar, from Rupganj Jamdani to Bogura doi, delivered to {store.districtCount} districts across {store.region}.</p>
           <div className="pay-badges">
-            <span className="pay-badge bkash">bKash</span>
-            <span className="pay-badge">VISA</span>
-            <span className="pay-badge">Mastercard</span>
+            {store.paymentMethods.flatMap((m) => m.brands.map((brand) => (
+              <span key={brand} className={`pay-badge ${m.method === 'BKASH' ? 'bkash' : ''}`}>{brand}</span>
+            )))}
           </div>
         </div>
         <div>
@@ -146,7 +146,7 @@ function Footer() {
         </div>
       </div>
       <div className="container footer-bottom muted small">
-        © ShopLite. A demo store for QA training. No real payments are processed.
+        © {store.name}. A demo store for QA training. No real payments are processed.
       </div>
     </footer>
   );

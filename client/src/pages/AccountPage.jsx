@@ -50,7 +50,7 @@ export default function AccountPage() {
       <div className="two-col even">
         <section className="loyalty-card" data-testid="loyalty-card">
           <div className="loyalty-top">
-            <span>ShopLite Rewards</span>
+            <span>{store.name} Rewards</span>
             <span className="loyalty-tier">{medal} {tier}</span>
           </div>
           <div className="loyalty-points"><span data-testid="loyalty-balance">{loyalty?.balance ?? '—'}</span> points</div>
@@ -89,7 +89,7 @@ export default function AccountPage() {
 
       <section className="section">
         <h2><Mail size={20} /> Inbox</h2>
-        <p className="muted small">Emails ShopLite sent you (simulated).</p>
+        <p className="muted small">Emails {store.name} sent you (simulated).</p>
         {inbox.length === 0 ? <p className="muted">No messages.</p> : (
           <ul className="inbox" data-testid="inbox">
             {inbox.map((n) => (

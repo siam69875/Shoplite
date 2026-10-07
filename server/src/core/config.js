@@ -8,6 +8,9 @@ export const config = {
   lockoutMinutes: 15,
   // Contact and delivery details shown in the storefront (see GET /api/store-info).
   store: {
+    name: 'ShopLite',
+    region: 'Bangladesh',
+    refundNote: 'Full refund after delivery',
     hotline: '09678-123456',
     deliveryDays: '2–5',
     welcomeCoupon: 'WELCOME10',

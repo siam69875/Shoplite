@@ -10,6 +10,13 @@ import { one, run } from '../../db/connection.js';
 
 export const PAYMENT_STATUS = { CAPTURED: 'CAPTURED', REFUNDED: 'REFUNDED' };
 export const PAYMENT_METHODS = { CARD: 'CARD', BKASH: 'BKASH' };
+
+// How each accepted method is named to shoppers, in the order the storefront shows them.
+// Adding a method here makes it appear in the header, footer, home page and checkout.
+export const PAYMENT_METHOD_INFO = [
+  { method: PAYMENT_METHODS.BKASH, label: 'bKash', account: 'bKash account', brands: ['bKash'] },
+  { method: PAYMENT_METHODS.CARD, label: 'Card', account: 'card', brands: ['Visa', 'Mastercard'] },
+];
 export const BKASH_TEST_OTP = '123456';
 
 export const BD_MOBILE_RE = /^01[3-9]\d{8}$/;
