@@ -20,6 +20,10 @@ export const ORDER_TEMPLATES = {
     subject: `Order #${o.id} cancelled`,
     body: `Hi ${o.customer_name}, your order was cancelled and ${formatMoney(o.total)} was refunded to your account.`,
   }),
+  [EVENTS.ORDER_ON_HOLD]: (o) => ({
+    subject: `Order #${o.id} is on hold`,
+    body: `Hi ${o.customer_name}, we are doing a quick check on your order before it ships. We will email you when it is on its way.`,
+  }),
   [EVENTS.ORDER_REFUNDED]: (o) => ({
     subject: `Refund issued for order #${o.id}`,
     body: `Hi ${o.customer_name}, we refunded ${formatMoney(o.total)}. ${o.points_awarded} loyalty points were deducted.`,

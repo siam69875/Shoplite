@@ -28,4 +28,5 @@ export const EVENTS = {
   ORDER_DELIVERED: 'order.delivered',
   ORDER_CANCELLED: 'order.cancelled',
   ORDER_REFUNDED: 'order.refunded',
+  ORDER_ON_HOLD: 'order.on_hold',
 };

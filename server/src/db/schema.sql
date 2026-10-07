@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS payments (
 CREATE TABLE IF NOT EXISTS orders (
   id               INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id          INTEGER NOT NULL REFERENCES users(id),
-  status           TEXT    NOT NULL CHECK (status IN ('PAID', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'REFUNDED')),
+  status           TEXT    NOT NULL CHECK (status IN ('PAID', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'REFUNDED', 'ON_HOLD')),
   subtotal   INTEGER NOT NULL,
   discount   INTEGER NOT NULL DEFAULT 0,
   tax        INTEGER NOT NULL,

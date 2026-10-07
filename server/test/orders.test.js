@@ -64,6 +64,16 @@ describe('Order status lifecycle', () => {
   });
 });
 
+describe('Order hold', () => {
+  it('admin can put a paid order on hold and release it to shipping', async () => {
+    const order = await placeOrder([[productId('Pure Mustard Oil 1L'), 1]]);
+    assert.equal((await setStatus(order.id, 'ON_HOLD')).body.order.status, 'ON_HOLD');
+    const inbox = (await customer.get('/api/notifications')).body.notifications;
+    assert.equal(inbox[0].subject, `Order #${order.id} is on hold`);
+    assert.equal((await setStatus(order.id, 'SHIPPED')).body.order.status, 'SHIPPED');
+  });
+});
+
 describe('Loyalty points', () => {
   it('awards 1 point per ৳100 of discounted subtotal on delivery, and reverses on refund', async () => {
     const order = await placeOrder([[productId('Smartphone 6.5" 128GB'), 1]]); // ৳18,999 → 189 points

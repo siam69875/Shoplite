@@ -109,7 +109,8 @@ function Dashboard() {
 }
 
 const NEXT_ACTIONS = {
-  PAID: [['SHIPPED', 'Mark shipped'], ['CANCELLED', 'Cancel']],
+  PAID: [['SHIPPED', 'Mark shipped'], ['ON_HOLD', 'Put on hold'], ['CANCELLED', 'Cancel']],
+  ON_HOLD: [['SHIPPED', 'Release & ship']],
   SHIPPED: [['DELIVERED', 'Mark delivered']],
   DELIVERED: [['REFUNDED', 'Refund']],
 };

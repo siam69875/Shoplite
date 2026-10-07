@@ -10,8 +10,8 @@ let db = null;
 let txDepth = 0;
 
 // Bump whenever schema.sql changes in a way old databases cannot satisfy.
-// v1: USD cents. v2: BDT whole Taka, sale prices, bKash payments.
-export const SCHEMA_VERSION = 2;
+// v1: USD cents. v2: BDT whole Taka, sale prices, bKash payments. v3: ON_HOLD order status.
+export const SCHEMA_VERSION = 3;
 
 function removeDatabaseFiles(file) {
   for (const suffix of ['', '-wal', '-shm']) fs.rmSync(file + suffix, { force: true });
