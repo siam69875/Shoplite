@@ -11,7 +11,7 @@ export const config = {
     name: 'ShopLite',
     region: 'Bangladesh',
     refundNote: 'Full refund after delivery',
-    hotline: '09678-123456000',
+    hotline: '09678-654321',
     deliveryDays: '2–5',
     welcomeCoupon: 'WELCOME10',
     // Coupons the storefront advertises (banners, sign-up). Their terms come from the coupons table.
