@@ -25,7 +25,7 @@ test('store info is public and matches the values the server enforces', async ()
     maxQtyPerItem: MAX_QTY_PER_ITEM,
     takaPerPoint: TAKA_PER_POINT,
     refundWindowDays: REFUND_WINDOW_DAYS,
-    hotline: '09678-123456',
+    hotline: '09678-654321',
     demoBkashOtp: BKASH_TEST_OTP,
     welcomeCoupon: 'WELCOME10',
     offers: {
@@ -63,4 +63,9 @@ test('a disabled coupon is no longer advertised, in the store info or the welcom
 
 test('every payment method checkout accepts has a shopper-facing name, and no others', () => {
   assert.deepEqual(PAYMENT_METHOD_INFO.map((m) => m.method).sort(), Object.values(PAYMENT_METHODS).sort());
+});
+
+test('the hotline is a valid Bangladeshi short-code number (09XXX-XXXXXX)', async () => {
+  const { body } = await freshApp().get('/api/store-info');
+  assert.match(body.hotline, /^09\d{3}-\d{6}$/);
 });
