@@ -2,15 +2,17 @@ import { useEffect, useRef, useState } from 'react';
 import { Minus, Plus } from 'lucide-react';
 import { money } from '../api.js';
 import { metaFor } from '../catalogMeta.js';
+import { useStoreInfo } from '../storeInfo.jsx';
 
 export function Totals({ totals, testId = 'totals' }) {
+  const store = useStoreInfo();
   return (
     <dl className="totals" data-testid={testId}>
       <dt>Subtotal</dt><dd data-testid="subtotal">{money(totals.subtotal)}</dd>
       {totals.discount > 0 && (
         <><dt>Coupon discount</dt><dd data-testid="discount" className="discount">−{money(totals.discount)}</dd></>
       )}
-      <dt>VAT (5%)</dt><dd data-testid="tax">{money(totals.tax)}</dd>
+      <dt>VAT ({store.vat})</dt><dd data-testid="tax">{money(totals.tax)}</dd>
       <dt>Delivery charge</dt><dd data-testid="shipping">{money(totals.shipping)}</dd>
       <dt className="grand">Total</dt><dd className="grand" data-testid="total">{money(totals.total)}</dd>
     </dl>
@@ -64,7 +66,7 @@ export function Price({ product, size }) {
   );
 }
 
-export function QtyStepper({ value, onChange, min = 1, max = 10, testId = 'qty' }) {
+export function QtyStepper({ value, onChange, min = 1, max, testId = 'qty' }) {
   return (
     <div className="stepper" data-testid={testId}>
       <button type="button" aria-label="Decrease quantity" onClick={() => onChange(Math.max(min, value - 1))} disabled={value <= min} data-testid={`${testId}-minus`}>

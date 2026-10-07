@@ -2,9 +2,22 @@ import { Link } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, EffectFade, Navigation, Pagination } from 'swiper/modules';
 import { ArrowRight } from 'lucide-react';
+import { money } from '../api.js';
 import { HERO_SLIDES } from '../catalogMeta.js';
+import { useStoreInfo } from '../storeInfo.jsx';
+
+// A coupon slide shows the coupon's real terms, and disappears when the coupon is off.
+function resolveSlides(offers) {
+  return HERO_SLIDES.flatMap((slide) => {
+    if (!slide.coupon) return [slide];
+    const offer = offers[slide.coupon];
+    return offer ? [{ ...slide, title: slide.title(offer, money), text: slide.text(offer) }] : [];
+  });
+}
 
 export default function HeroCarousel() {
+  const { offers } = useStoreInfo();
+  const slides = resolveSlides(offers);
   return (
     <section className="hero" data-testid="hero-carousel">
       <Swiper
@@ -17,7 +30,7 @@ export default function HeroCarousel() {
         pagination={{ clickable: true }}
         navigation
       >
-        {HERO_SLIDES.map((slide) => (
+        {slides.map((slide) => (
           <SwiperSlide key={slide.title}>
             <div className="hero-slide" style={{ background: slide.gradient }}>
               <div className="hero-copy">

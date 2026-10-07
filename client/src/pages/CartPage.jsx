@@ -5,11 +5,11 @@ import { api, money } from '../api.js';
 import { metaFor } from '../catalogMeta.js';
 import { ErrorMessage, QtyStepper, Totals } from '../components/ui.jsx';
 import { useSession } from '../session.jsx';
+import { useStoreInfo } from '../storeInfo.jsx';
 import { useToast } from '../toast.jsx';
 
-const COUPON_HINTS = ['WELCOME10', 'SAVE100', 'BOISHAKH15'];
-
 export default function CartPage() {
+  const store = useStoreInfo();
   const [cart, setCart] = useState(null);
   const [couponInput, setCouponInput] = useState('');
   const [error, setError] = useState(null);
@@ -67,7 +67,7 @@ export default function CartPage() {
               </div>
               <QtyStepper
                 value={item.quantity}
-                max={Math.max(1, Math.min(10, item.stock))}
+                max={Math.max(1, Math.min(store.maxQtyPerItem, item.stock))}
                 onChange={(q) => act(`/cart/items/${item.productId}`, { method: 'PATCH', body: { quantity: q } })}
                 testId="cart-qty"
               />
@@ -107,7 +107,7 @@ export default function CartPage() {
                 <button type="submit" className="btn btn-ghost" data-testid="apply-coupon">Apply</button>
               </form>
               <div className="coupon-hints">
-                {COUPON_HINTS.map((c) => (
+                {Object.keys(store.offers).map((c) => (
                   <button key={c} type="button" className="chip chip-sm" onClick={() => setCouponInput(c)}>🎟️ {c}</button>
                 ))}
               </div>

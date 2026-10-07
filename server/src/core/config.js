@@ -6,5 +6,16 @@ export const config = {
   sessionTtlHours: 24,
   maxFailedLogins: 5,
   lockoutMinutes: 15,
+  // Contact and delivery details shown in the storefront (see GET /api/store-info).
+  store: {
+    name: 'ShopLite',
+    region: 'Bangladesh',
+    refundNote: 'Full refund after delivery',
+    hotline: '09678-123456000',
+    deliveryDays: '2–5',
+    welcomeCoupon: 'WELCOME10',
+    // Coupons the storefront advertises (banners, sign-up). Their terms come from the coupons table.
+    advertisedCoupons: ['WELCOME10', 'SAVE100', 'BOISHAKH15'],
+  },
   bcryptRounds: Number(process.env.BCRYPT_ROUNDS) || 10,
 };

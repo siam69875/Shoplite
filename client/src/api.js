@@ -40,11 +40,13 @@ export async function api(path, { method = 'GET', body, signal } = {}) {
 
 export const isAbort = (err) => err?.name === 'AbortError';
 
+export const CURRENCY = '৳';
+
 // Bangladeshi Taka with lakh/crore grouping: ৳1,00,000
 export const money = (amount) => {
   // Never disguise a missing amount as ৳0: that hides API bugs.
   if (typeof amount !== 'number' || Number.isNaN(amount)) return '৳—';
-  return `${amount < 0 ? '-' : ''}৳${Math.abs(amount).toLocaleString('en-IN')}`;
+  return `${amount < 0 ? '-' : ''}${CURRENCY}${Math.abs(amount).toLocaleString('en-IN')}`;
 };
 
 export const formatDate = (iso) =>

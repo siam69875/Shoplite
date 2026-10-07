@@ -3,6 +3,7 @@ import { Link, useLocation, useParams } from 'react-router-dom';
 import { CheckCircle2, CreditCard, Home, Package, PartyPopper, Smartphone, Truck } from 'lucide-react';
 import { api, formatDate, money } from '../api.js';
 import { ErrorMessage, StatusBadge, Totals } from '../components/ui.jsx';
+import { useStoreInfo } from '../storeInfo.jsx';
 import { useToast } from '../toast.jsx';
 
 const STEPS = [
@@ -12,11 +13,12 @@ const STEPS = [
 ];
 
 function Tracker({ order }) {
+  const store = useStoreInfo();
   if (order.status === 'CANCELLED' || order.status === 'REFUNDED') {
     return (
       <div className={`tracker-banner ${order.status.toLowerCase()}`} data-testid="tracker">
         {order.status === 'CANCELLED' ? '❌ This order was cancelled.' : '↩️ This order was refunded.'}{' '}
-        {order.payment && <>{money(order.payment.refundedAmount)} has been returned to your {order.payment.method === 'BKASH' ? 'bKash account' : 'card'}.</>}
+        {order.payment && <>{money(order.payment.refundedAmount)} has been returned to your {store.methodInfo(order.payment.method).account}.</>}
       </div>
     );
   }
@@ -38,6 +40,7 @@ function Tracker({ order }) {
 }
 
 export default function OrderPage() {
+  const store = useStoreInfo();
   const { id } = useParams();
   const location = useLocation();
   const toast = useToast();
@@ -116,7 +119,7 @@ export default function OrderPage() {
           {order.payment && (
             <p className="payment-line" data-testid="payment-info">
               {order.payment.method === 'BKASH' ? <Smartphone size={16} /> : <CreditCard size={16} />}
-              {order.payment.method === 'BKASH' ? 'bKash' : 'Card'} ••{order.payment.accountLast4} · {order.payment.status}
+              {store.methodInfo(order.payment.method).label} ••{order.payment.accountLast4} · {order.payment.status}
             </p>
           )}
           {order.pointsAwarded > 0 && <p className="small points-line"><CheckCircle2 size={16} /> Earned {order.pointsAwarded} loyalty points</p>}

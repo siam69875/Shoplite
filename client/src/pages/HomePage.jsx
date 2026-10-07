@@ -8,6 +8,7 @@ import ProductCard from '../components/ProductCard.jsx';
 import ProductCarousel from '../components/ProductCarousel.jsx';
 import { Reveal, SectionHeader, SkeletonGrid } from '../components/ui.jsx';
 import { useProducts } from '../hooks/useProducts.js';
+import { useStoreInfo } from '../storeInfo.jsx';
 
 function useCountdownToMidnight() {
   const [left, setLeft] = useState(0);
@@ -35,14 +36,15 @@ function Countdown() {
   );
 }
 
-const PERKS = [
-  [Truck, 'Nationwide delivery', 'Flat ৳60 to all 64 districts'],
-  [Wallet, 'Pay your way', 'bKash or any Visa/Mastercard'],
-  [ShieldCheck, '30-day returns', 'Full refund after delivery'],
-  [Gift, 'Loyalty points', '1 point for every ৳100'],
+const perks = (store) => [
+  [Truck, 'Nationwide delivery', `Flat ${store.delivery} to ${store.districtCount} districts`],
+  [Wallet, 'Pay your way', store.paymentBrands],
+  [ShieldCheck, `${store.refundDays}-day returns`, store.refundNote],
+  [Gift, 'Loyalty points', `1 point for every ${store.perPoint}`],
 ];
 
 export default function HomePage() {
+  const store = useStoreInfo();
   const [categories, setCategories] = useState(null);
   const flash = useProducts({ onSale: 1, sort: 'discount', limit: 12 });
   const popular = useProducts({ sort: 'popular', limit: 12 });
@@ -58,8 +60,8 @@ export default function HomePage() {
       <HeroCarousel />
 
       <section className="perks">
-        {PERKS.map(([Icon, title, text], i) => (
-          <Reveal key={title} className="perk" delay={i * 80}>
+        {perks(store).map(([Icon, title, text], i) => (
+          <Reveal key={i} className="perk" delay={i * 80}>
             <span className="perk-icon"><Icon size={22} /></span>
             <div><strong>{title}</strong><span className="muted small">{text}</span></div>
           </Reveal>
@@ -97,27 +99,29 @@ export default function HomePage() {
       <Reveal as="section" className="promo-row">
         <Link to="/shop?category=Handicrafts" className="promo promo-craft">
           <div>
-            <span className="promo-eyebrow">Made in Bangladesh</span>
+            <span className="promo-eyebrow">Made in {store.region}</span>
             <h3>Support local artisans</h3>
             <p>Rickshaw art, Nakshi Kantha, Shital Pati and more.</p>
           </div>
           <span className="promo-emoji">🛺</span>
         </Link>
-        <Link to="/checkout" className="promo promo-bkash">
-          <div>
-            <span className="promo-eyebrow">Fast & secure</span>
-            <h3>Pay with bKash</h3>
-            <p>Checkout in seconds with your bKash wallet.</p>
-          </div>
-          <span className="promo-emoji">📲</span>
-        </Link>
+        {store.paymentMethods.some((m) => m.method === 'BKASH') && (
+          <Link to="/checkout" className="promo promo-bkash">
+            <div>
+              <span className="promo-eyebrow">Fast & secure</span>
+              <h3>Pay with {store.methodInfo('BKASH').label}</h3>
+              <p>Checkout in seconds with your {store.methodInfo('BKASH').account}.</p>
+            </div>
+            <span className="promo-emoji">📲</span>
+          </Link>
+        )}
       </Reveal>
 
       <section className="section">
         <SectionHeader
           title="Best sellers"
           icon={<Flame size={22} />}
-          subtitle="What Bangladesh is buying right now"
+          subtitle={`What ${store.region} is buying right now`}
           action={<Link to="/shop?sort=popular" className="link-arrow">See all <ArrowRight size={16} /></Link>}
         />
         <ProductCarousel products={popular.products} testId="best-sellers" />

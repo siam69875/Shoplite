@@ -1,3 +1,5 @@
+import { offerText } from './storeInfo.jsx';
+
 // Visual identity for each category: icon, tile gradient and accent colour.
 export const CATEGORY_META = {
   "Women's Fashion": { icon: '🥻', tile: 'linear-gradient(135deg, #ffe0ec 0%, #ffd1dc 100%)', accent: '#e8456b' },
@@ -31,8 +33,10 @@ export const HERO_SLIDES = [
   },
   {
     eyebrow: 'শুভ নববর্ষ · Boishakhi Utsab',
-    title: '15% off orders over ৳2,000',
-    text: 'Use code BOISHAKH15 at checkout. Celebrate with hilsa, sweets and red-and-white sarees.',
+    // Terms come from the live coupon; the slide is hidden while the coupon can't be used.
+    coupon: 'BOISHAKH15',
+    title: (offer, money) => `${offerText(offer)} orders over ${money(offer.minSubtotal)}`,
+    text: (offer) => `Use code ${offer.code} at checkout. Celebrate with hilsa, sweets and red-and-white sarees.`,
     cta: 'Grab the deal',
     to: '/shop?onSale=1',
     gradient: 'linear-gradient(120deg, #d6252f 0%, #f45c43 50%, #ffb347 100%)',
