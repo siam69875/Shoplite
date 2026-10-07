@@ -1,6 +1,7 @@
 import { EVENTS } from '../../core/eventBus.js';
 import { formatMoney } from '../../core/money.js';
 import { pointsForOrder } from '../loyalty/loyalty.service.js';
+import { welcomeOffer } from '../store/store.service.js';
 
 // One email template per order event. `o` is an order row joined with the customer's name.
 export const ORDER_TEMPLATES = {
@@ -26,7 +27,10 @@ export const ORDER_TEMPLATES = {
   }),
 };
 
-export const welcomeTemplate = (user) => ({
-  subject: 'Welcome to ShopLite!',
-  body: `Hi ${user.name}, your account is ready. Use code WELCOME10 for 10% off your first order.`,
-});
+const offerText = (o) => (o.type === 'PERCENT' ? `${o.value}% off` : `${formatMoney(o.value)} off`);
+
+export function welcomeTemplate(user) {
+  const offer = welcomeOffer();
+  const promo = offer ? ` Use code ${offer.code} for ${offerText(offer)} your first order.` : '';
+  return { subject: 'Welcome to ShopLite!', body: `Hi ${user.name}, your account is ready.${promo}` };
+}

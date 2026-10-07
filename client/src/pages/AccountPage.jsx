@@ -4,6 +4,7 @@ import { Mail } from 'lucide-react';
 import { api, formatDate } from '../api.js';
 import { ErrorMessage } from '../components/ui.jsx';
 import { useSession } from '../session.jsx';
+import { useStoreInfo } from '../storeInfo.jsx';
 import { useToast } from '../toast.jsx';
 
 const REASON_LABEL = { ORDER_DELIVERED: 'Order delivered', ORDER_REFUNDED: 'Order refunded' };
@@ -15,6 +16,7 @@ function tierFor(points) {
 }
 
 export default function AccountPage() {
+  const store = useStoreInfo();
   const { user, setUser } = useSession();
   const toast = useToast();
   const [name, setName] = useState(user.name);
@@ -52,7 +54,7 @@ export default function AccountPage() {
             <span className="loyalty-tier">{medal} {tier}</span>
           </div>
           <div className="loyalty-points"><span data-testid="loyalty-balance">{loyalty?.balance ?? '—'}</span> points</div>
-          <p>Earn 1 point for every ৳100 spent. Points are credited when your order is delivered.</p>
+          <p>Earn 1 point for every {store.perPoint} spent. Points are credited when your order is delivered.</p>
           <div className="loyalty-name">{user.name}</div>
         </section>
 

@@ -107,3 +107,15 @@ test('admin sees the dashboard; customers cannot', async ({ page }) => {
   await page.goto('/admin');
   await expect(page.getByText('Admin access required.')).toBeVisible();
 });
+
+test('header, footer and product page show the delivery charge and hotline the server uses', async ({ page, request }) => {
+  const info = await (await request.get('/api/store-info')).json();
+  const delivery = `৳${info.deliveryCharge}`;
+  await page.goto('/');
+  await expect(page.locator('.topbar')).toContainText(`flat ${delivery}`);
+  await expect(page.locator('.topbar')).toContainText(`Hotline ${info.hotline}`);
+  await expect(page.locator('.site-footer')).toContainText(`Delivery: ${delivery} flat`);
+  await expect(page.locator('.site-footer')).toContainText(`Returns within ${info.refundWindowDays} days`);
+  await openProduct(page, 'Dhakai Jamdani Saree');
+  await expect(page.locator('.delivery-info')).toContainText(`Delivery ${delivery}`);
+});

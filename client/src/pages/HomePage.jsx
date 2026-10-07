@@ -8,6 +8,7 @@ import ProductCard from '../components/ProductCard.jsx';
 import ProductCarousel from '../components/ProductCarousel.jsx';
 import { Reveal, SectionHeader, SkeletonGrid } from '../components/ui.jsx';
 import { useProducts } from '../hooks/useProducts.js';
+import { useStoreInfo } from '../storeInfo.jsx';
 
 function useCountdownToMidnight() {
   const [left, setLeft] = useState(0);
@@ -35,14 +36,15 @@ function Countdown() {
   );
 }
 
-const PERKS = [
-  [Truck, 'Nationwide delivery', 'Flat ৳60 to all 64 districts'],
+const perks = (store) => [
+  [Truck, 'Nationwide delivery', `Flat ${store.delivery} to ${store.districtCount} districts`],
   [Wallet, 'Pay your way', 'bKash or any Visa/Mastercard'],
-  [ShieldCheck, '30-day returns', 'Full refund after delivery'],
-  [Gift, 'Loyalty points', '1 point for every ৳100'],
+  [ShieldCheck, `${store.refundDays}-day returns`, 'Full refund after delivery'],
+  [Gift, 'Loyalty points', `1 point for every ${store.perPoint}`],
 ];
 
 export default function HomePage() {
+  const store = useStoreInfo();
   const [categories, setCategories] = useState(null);
   const flash = useProducts({ onSale: 1, sort: 'discount', limit: 12 });
   const popular = useProducts({ sort: 'popular', limit: 12 });
@@ -58,8 +60,8 @@ export default function HomePage() {
       <HeroCarousel />
 
       <section className="perks">
-        {PERKS.map(([Icon, title, text], i) => (
-          <Reveal key={title} className="perk" delay={i * 80}>
+        {perks(store).map(([Icon, title, text], i) => (
+          <Reveal key={i} className="perk" delay={i * 80}>
             <span className="perk-icon"><Icon size={22} /></span>
             <div><strong>{title}</strong><span className="muted small">{text}</span></div>
           </Reveal>

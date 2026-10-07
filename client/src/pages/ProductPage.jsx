@@ -8,6 +8,7 @@ import { ErrorMessage, Price, ProductArt, QtyStepper, SectionHeader, Stars, Stoc
 import { useAddToCart } from '../hooks/useAddToCart.js';
 import { useProducts } from '../hooks/useProducts.js';
 import { useSession } from '../session.jsx';
+import { useStoreInfo } from '../storeInfo.jsx';
 import { useToast } from '../toast.jsx';
 
 function RatingBreakdown({ reviews }) {
@@ -27,6 +28,7 @@ function RatingBreakdown({ reviews }) {
 }
 
 export default function ProductPage() {
+  const store = useStoreInfo();
   const { id } = useParams();
   const { user } = useSession();
   const navigate = useNavigate();
@@ -70,7 +72,7 @@ export default function ProductPage() {
   if (!product) return <div className="container">{error ? <ErrorMessage error={error} /> : <div className="skeleton skeleton-hero" />}</div>;
 
   const soldOut = product.stockStatus === 'OUT_OF_STOCK';
-  const maxQty = Math.max(1, Math.min(10, product.stock));
+  const maxQty = Math.max(1, Math.min(store.maxQtyPerItem, product.stock));
   const meta = metaFor(product.category);
 
   return (
@@ -113,12 +115,12 @@ export default function ProductPage() {
               <Zap size={18} /> Buy now
             </button>
           </div>
-          <p className="muted small">Max 10 per customer per item.</p>
+          <p className="muted small">Max {store.maxQty} per customer per item.</p>
 
           <div className="delivery-info">
-            <div><Truck size={20} /><span><b>Delivery ৳60</b><br /><span className="muted small">2–5 days, all over Bangladesh</span></span></div>
+            <div><Truck size={20} /><span><b>Delivery {store.delivery}</b><br /><span className="muted small">{store.deliveryDays} days, all over Bangladesh</span></span></div>
             <div><Wallet size={20} /><span><b>bKash & cards</b><br /><span className="muted small">Secure payment</span></span></div>
-            <div><RotateCcw size={20} /><span><b>30-day returns</b><br /><span className="muted small">Full refund after delivery</span></span></div>
+            <div><RotateCcw size={20} /><span><b>{store.refundDays}-day returns</b><br /><span className="muted small">Full refund after delivery</span></span></div>
           </div>
         </div>
       </section>

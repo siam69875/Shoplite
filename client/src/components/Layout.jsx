@@ -4,6 +4,7 @@ import { LayoutDashboard, LogOut, Package, Phone, ShoppingBag, Truck, User } fro
 import { api } from '../api.js';
 import { metaFor } from '../catalogMeta.js';
 import { useSession } from '../session.jsx';
+import { useStoreInfo } from '../storeInfo.jsx';
 import SearchBox from './SearchBox.jsx';
 
 function CartButton() {
@@ -33,6 +34,7 @@ function CartButton() {
 }
 
 function Header() {
+  const store = useStoreInfo();
   const { user, signOut } = useSession();
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
@@ -47,8 +49,8 @@ function Header() {
     <header className="site-header">
       <div className="topbar">
         <div className="container topbar-inner">
-          <span><Truck size={14} /> Delivery all over Bangladesh in 2–5 days · flat ৳60</span>
-          <span className="topbar-right"><Phone size={14} /> Hotline 09678-123456 · Pay with <b className="bkash-text">bKash</b> or card</span>
+          <span><Truck size={14} /> Delivery all over Bangladesh in {store.deliveryDays} days · flat {store.delivery}</span>
+          <span className="topbar-right"><Phone size={14} /> Hotline {store.hotline} · Pay with <b className="bkash-text">bKash</b> or card</span>
         </div>
       </div>
       <div className="container header-main">
@@ -111,6 +113,7 @@ function Header() {
 }
 
 function Footer() {
+  const store = useStoreInfo();
   return (
     <footer className="site-footer">
       <div className="container footer-grid">
@@ -131,9 +134,9 @@ function Footer() {
         </div>
         <div>
           <h4>Help</h4>
-          <span>Delivery: ৳60 flat</span>
-          <span>Returns within 30 days</span>
-          <span>Hotline 09678-123456</span>
+          <span>Delivery: {store.delivery} flat</span>
+          <span>Returns within {store.refundDays} days</span>
+          <span>Hotline {store.hotline}</span>
         </div>
         <div>
           <h4>Your account</h4>

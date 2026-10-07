@@ -4,9 +4,11 @@ import { CreditCard, Lock, MapPin, Smartphone } from 'lucide-react';
 import { api, money } from '../api.js';
 import { ErrorMessage, Totals } from '../components/ui.jsx';
 import { useSession } from '../session.jsx';
+import { useStoreInfo } from '../storeInfo.jsx';
 import { useToast } from '../toast.jsx';
 
 export default function CheckoutPage() {
+  const store = useStoreInfo();
   const { user, refreshCart } = useSession();
   const toast = useToast();
   const navigate = useNavigate();
@@ -99,7 +101,7 @@ export default function CheckoutPage() {
                     </div>
                   </label>
                 </div>
-                {otpSent && <p className="small hint">📩 Demo: the code is <code>123456</code>. Numbers ending in <code>000</code> have insufficient balance.</p>}
+                {otpSent && <p className="small hint">📩 Demo: the code is <code>{store.demoBkashOtp}</code>. Numbers ending in <code>000</code> have insufficient balance.</p>}
               </div>
             ) : (
               <div className="pay-panel">

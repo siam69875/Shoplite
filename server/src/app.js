@@ -14,6 +14,7 @@ import { registerNotificationListeners } from './modules/notifications/notificat
 import { notificationsRouter } from './modules/notifications/notifications.routes.js';
 import { ordersRouter } from './modules/orders/orders.routes.js';
 import { reviewsRouter } from './modules/reviews/reviews.routes.js';
+import { storeRouter } from './modules/store/store.routes.js';
 import { usersRouter } from './modules/users/users.routes.js';
 
 export function registerListeners() {
@@ -30,6 +31,7 @@ export function createApp() {
   app.use(express.json({ limit: '100kb' }));
 
   app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
+  app.use('/api/store-info', storeRouter);
   app.use('/api/auth', authRouter);
   app.use('/api/users', usersRouter);
   app.use('/api/products/:productId/reviews', reviewsRouter);

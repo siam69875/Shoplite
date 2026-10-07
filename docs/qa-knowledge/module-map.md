@@ -69,6 +69,7 @@ the impact of a change. Code-import analysis alone only finds the first.
 | notifications | loyalty, users, orders (status list) | n/a | **orders**, users | n/a | `user.registered`, all `order.*` |
 | reviews | catalog, orders | n/a | users | n/a | n/a |
 | admin (+reports) | catalog, coupons, inventory, orders | n/a | **orders, order_items, users** | n/a | n/a |
+| store (`GET /api/store-info`) | shipping, pricing, cart, checkout, loyalty, orders, payments, coupons | storefront header/footer, home, product, cart, checkout, register pages; notifications (welcome email) | coupons | n/a | n/a |
 
 ## Event table
 
@@ -94,3 +95,4 @@ for each one in `notifications.templates.js`.
 - **INV-06, coupon accounting:** A coupon's `used_count` = number of orders placed with it (including later-cancelled orders), never more than its usage limit.
 - **INV-07, atomic checkout:** Checkout is all-or-nothing. On any failure (stock, coupon, payment) there is no order, no charge, no stock change and no coupon use.
 - **INV-08, authorization:** Every `/api/admin/*` endpoint rejects customers (403) and guests (401).
+- **INV-09, advertised = charged:** Every store setting shown to shoppers (delivery charge and days, VAT %, max quantity, loyalty rate, refund window, hotline, coupon terms) comes from `GET /api/store-info`, which reads the constants the server enforces. Changing a rule changes every page; no page types these values in. A coupon that is off, expired or used up is not advertised anywhere.

@@ -3,9 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../api.js';
 import { ErrorMessage } from '../components/ui.jsx';
 import { useSession } from '../session.jsx';
+import { useStoreInfo, offerText } from '../storeInfo.jsx';
 import { useToast } from '../toast.jsx';
 
 export default function RegisterPage() {
+  const store = useStoreInfo();
   const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(false);
@@ -19,7 +21,8 @@ export default function RegisterPage() {
     setError(null);
     try {
       signIn(await api('/auth/register', { method: 'POST', body: form }));
-      toast('Account created! Use WELCOME10 for 10% off.', { icon: '🎉' });
+      const offer = store.welcomeOffer;
+      toast(offer ? `Account created! Use ${offer.code} for ${offerText(offer)}.` : 'Account created!', { icon: '🎉' });
       navigate('/');
     } catch (err) {
       setError(err.message);
@@ -33,7 +36,9 @@ export default function RegisterPage() {
       <div className="auth-visual auth-visual-alt" aria-hidden="true">
         <span>🎁</span><span>🏏</span><span>🍵</span><span>🧸</span>
         <h2>Join ShopLite</h2>
-        <p>Get 10% off your first order with code WELCOME10, plus loyalty points on every purchase.</p>
+        <p>{store.welcomeOffer
+          ? `Get ${offerText(store.welcomeOffer)} your first order with code ${store.welcomeOffer.code}, plus loyalty points on every purchase.`
+          : 'Earn loyalty points on every purchase.'}</p>
       </div>
       <form className="card auth-form" onSubmit={submit} data-testid="register-form">
         <h1>Create your account</h1>
