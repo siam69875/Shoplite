@@ -12,7 +12,7 @@ export const config = {
     region: 'Bangladesh',
     refundNote: 'Full refund after delivery',
     hotline: '09678-654321',
-    deliveryDays: '2–5',
+    deliveryDays: '3–5',
     welcomeCoupon: 'WELCOME10',
     // Coupons the storefront advertises (banners, sign-up). Their terms come from the coupons table.
     advertisedCoupons: ['WELCOME10', 'SAVE100', 'BOISHAKH15'],
