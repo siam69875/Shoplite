@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
-import { CheckCircle2, CreditCard, Home, Package, PartyPopper, Smartphone, Truck } from 'lucide-react';
+import { Banknote, CheckCircle2, CreditCard, Home, Package, PartyPopper, Smartphone, Truck } from 'lucide-react';
+
+const PAY_ICON = { BKASH: Smartphone, CARD: CreditCard, COD: Banknote };
 import { api, formatDate, money } from '../api.js';
 import { ErrorMessage, StatusBadge, Totals } from '../components/ui.jsx';
 import { useStoreInfo } from '../storeInfo.jsx';
@@ -18,7 +20,9 @@ function Tracker({ order }) {
     return (
       <div className={`tracker-banner ${order.status.toLowerCase()}`} data-testid="tracker">
         {order.status === 'CANCELLED' ? '❌ This order was cancelled.' : '↩️ This order was refunded.'}{' '}
-        {order.payment && <>{money(order.payment.refundedAmount)} has been returned to your {store.methodInfo(order.payment.method).account}.</>}
+        {order.payment && (order.payment.status === 'VOIDED'
+          ? <>No payment was taken, so there is nothing to refund.</>
+          : <>{money(order.payment.refundedAmount)} has been returned to your {store.methodInfo(order.payment.method).account}.</>)}
       </div>
     );
   }
@@ -118,9 +122,12 @@ export default function OrderPage() {
           <Totals totals={order} testId="order-totals" />
           {order.payment && (
             <p className="payment-line" data-testid="payment-info">
-              {order.payment.method === 'BKASH' ? <Smartphone size={16} /> : <CreditCard size={16} />}
-              {store.methodInfo(order.payment.method).label} ••{order.payment.accountLast4} · {order.payment.status}
+              {(() => { const Icon = PAY_ICON[order.payment.method] ?? CreditCard; return <Icon size={16} />; })()}
+              {store.methodInfo(order.payment.method).label}{order.payment.accountLast4 ? ` ••${order.payment.accountLast4}` : ''} · {order.payment.status}
             </p>
+          )}
+          {order.payment?.status === 'PENDING' && (
+            <p className="small hint" data-testid="cod-due">Pay {money(order.total)} in cash when the courier delivers your order.</p>
           )}
           {order.pointsAwarded > 0 && <p className="small points-line"><CheckCircle2 size={16} /> Earned {order.pointsAwarded} loyalty points</p>}
           {order.canCancel && !confirming && (

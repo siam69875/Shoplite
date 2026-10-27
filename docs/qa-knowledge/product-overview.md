@@ -3,7 +3,7 @@
 **ShopLite Bangladesh** is an online store for Bangladeshi customers. It sells 147 products in 13
 categories, from Dhakai Jamdani and Eid Panjabi to Sylhet tea, Sundarbans honey, electronics,
 handicrafts and sweets. All prices are in **Taka (৳)**. Customers browse a catalog, add items to a cart, apply a coupon,
-pay with **bKash or card** and track their orders. Delivered orders earn loyalty points, and verified buyers
+pay with **bKash, card or Cash on Delivery** and track their orders. Delivered orders earn loyalty points, and verified buyers
 can review products. Store staff use an admin console to manage orders, products, stock and
 coupons and to read sales reports.
 
@@ -18,7 +18,7 @@ inbox.
 | Catalog | Browse, **live search** (results update while typing, with suggestions in the header), filter by category, price, stock and sale, sort | Create, edit and delete products, set sale (original) prices |
 | Inventory | See stock status (In stock / Only N left / Out of stock) | Set stock levels; see low-stock report |
 | Cart | Add, update and remove items; apply one coupon | n/a |
-| Checkout | Enter a Bangladeshi address (mobile, district, postcode); pay with bKash or card | n/a |
+| Checkout | Enter a Bangladeshi address (mobile, district, postcode); pay with bKash, card or Cash on Delivery (৳20 fee, up to ৳10,000, 7 districts) | n/a |
 | Orders | View own orders; cancel before shipping | View all orders; ship, deliver, cancel, refund |
 | Coupons | Apply a code in the cart | Create, activate and deactivate coupons |
 | Loyalty | See balance and history | n/a |

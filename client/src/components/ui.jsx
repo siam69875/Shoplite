@@ -14,6 +14,9 @@ export function Totals({ totals, testId = 'totals' }) {
       )}
       <dt>VAT ({store.vat})</dt><dd data-testid="tax">{money(totals.tax)}</dd>
       <dt>Delivery charge</dt><dd data-testid="shipping">{money(totals.shipping)}</dd>
+      {totals.codFee > 0 && (
+        <><dt>Cash on Delivery fee</dt><dd data-testid="cod-fee">{money(totals.codFee)}</dd></>
+      )}
       <dt className="grand">Total</dt><dd className="grand" data-testid="total">{money(totals.total)}</dd>
     </dl>
   );

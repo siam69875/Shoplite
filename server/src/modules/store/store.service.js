@@ -6,7 +6,7 @@ import { DISTRICTS } from '../checkout/checkout.service.js';
 import { findCoupon } from '../coupons/coupons.service.js';
 import { TAKA_PER_POINT } from '../loyalty/loyalty.service.js';
 import { REFUND_WINDOW_DAYS } from '../orders/order-status.js';
-import { BKASH_TEST_OTP, PAYMENT_METHOD_INFO } from '../payments/payments.service.js';
+import { BKASH_TEST_OTP, COD_DISTRICTS, COD_FEE, COD_MAX_TOTAL, PAYMENT_METHOD_INFO } from '../payments/payments.service.js';
 import { TAX_RATE } from '../pricing/pricing.service.js';
 import { DELIVERY_CHARGE } from '../shipping/shipping.service.js';
 
@@ -31,6 +31,7 @@ export function getStoreInfo() {
     storeName: config.store.name,
     region: config.store.region,
     paymentMethods: PAYMENT_METHOD_INFO,
+    cod: { fee: COD_FEE, maxOrderTotal: COD_MAX_TOTAL, districts: COD_DISTRICTS },
     refundNote: config.store.refundNote,
     deliveryCharge: DELIVERY_CHARGE,
     deliveryDays: config.store.deliveryDays,

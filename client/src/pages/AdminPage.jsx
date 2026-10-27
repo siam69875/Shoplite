@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { BadgePercent, Banknote, LayoutDashboard, Package, ReceiptText, ShoppingBag, Tag, Undo2, Users } from 'lucide-react';
+import { BadgePercent, Banknote, HandCoins, LayoutDashboard, Package, ReceiptText, ShoppingBag, Tag, Undo2, Users } from 'lucide-react';
 import { api, CURRENCY, formatDate, money } from '../api.js';
 import { metaFor } from '../catalogMeta.js';
 import { ErrorMessage, StatusBadge, StockBadge } from '../components/ui.jsx';
@@ -57,6 +57,7 @@ function Dashboard() {
     ['Paid orders', summary.paidOrderCount, 'stat-orders', ShoppingBag, 'g-purple'],
     ['Avg. order', money(summary.averageOrderValue), 'stat-aov', ReceiptText, 'g-blue'],
     ['Refunded', money(summary.refundedAmount), 'stat-refunded', Undo2, 'g-red'],
+    ['Cash to collect', `${money(summary.cashToCollect)} · ${summary.cashToCollectOrders} COD`, 'stat-cod', HandCoins, 'g-blue'],
     ['VAT collected', money(summary.taxCollected), 'stat-tax', ReceiptText, 'g-orange'],
     ['Discounts given', money(summary.discountsGiven), 'stat-discounts', BadgePercent, 'g-pink'],
     ['Customers', summary.customerCount, 'stat-customers', Users, 'g-teal'],

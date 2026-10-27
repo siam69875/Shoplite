@@ -11,7 +11,7 @@ const fixed = (value) => ({ type: 'FIXED', value });
 describe('Pricing engine (BDT)', () => {
   it('adds 5% VAT and the ৳60 delivery charge to the subtotal', () => {
     const t = calculateTotals([{ unitPrice: 1000, quantity: 2 }]);
-    assert.deepEqual(t, { subtotal: 2000, discount: 0, tax: 100, shipping: 60, total: 2160, itemCount: 2 });
+    assert.deepEqual(t, { subtotal: 2000, discount: 0, tax: 100, shipping: 60, codFee: 0, total: 2160, itemCount: 2 });
   });
 
   it('charges no delivery for an empty cart', () => {
