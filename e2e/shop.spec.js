@@ -119,3 +119,31 @@ test('header, footer and product page show the delivery charge and hotline the s
   await openProduct(page, 'Dhakai Jamdani Saree');
   await expect(page.locator('.delivery-info')).toContainText(`Delivery ${delivery}`);
 });
+
+test('customer pays with Cash on Delivery: fee, district check, and a pending payment', async ({ page }) => {
+  await login(page, 'rahim@shoplite.test', 'Shopper@123');
+  await expect(page.locator('.topbar')).toContainText('Cash on Delivery');
+  await openProduct(page, 'Pure Mustard Oil 1L');
+  await page.getByTestId('detail-add-to-cart').click();
+  await expect(page.getByTestId('toast')).toBeVisible();
+
+  await page.goto('/checkout');
+  await fillAddress(page);
+  const cardTotal = await page.getByTestId('total').textContent();
+  await page.getByTestId('pay-cod').click();
+  await expect(page.getByTestId('cod-fee')).toHaveText('৳20');
+  const toTaka = (s) => Number(s.replace(/[^\d]/g, ''));
+  await expect(page.getByTestId('total')).toHaveText(`৳${toTaka(cardTotal) + 20}`);
+
+  await page.getByTestId('city-input').selectOption('Bogura');
+  await expect(page.getByTestId('cod-unavailable')).toContainText('not available in Bogura');
+  await expect(page.getByTestId('place-order')).toBeDisabled();
+  await page.getByTestId('city-input').selectOption('Dhaka');
+  await expect(page.getByTestId('place-order')).toContainText('on delivery');
+  await page.getByTestId('place-order').click();
+
+  await expect(page.getByTestId('order-success')).toBeVisible();
+  await expect(page.getByTestId('order-totals').getByTestId('cod-fee')).toHaveText('৳20');
+  await expect(page.getByTestId('payment-info')).toContainText('Cash on Delivery · PENDING');
+  await expect(page.getByTestId('cod-due')).toBeVisible();
+});

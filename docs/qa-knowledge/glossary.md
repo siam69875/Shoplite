@@ -7,12 +7,15 @@
 | **MRP / original price** | The price before a sale, shown struck through. |
 | **VAT** | Value-added tax, 5% of the discounted subtotal. |
 | **bKash** | Bangladesh's most popular mobile wallet. A payment method at checkout. |
+| **Cash on Delivery (COD)** | The customer pays the courier in cash when the order arrives. Costs a ৳20 fee; only up to ৳10,000 and in 7 districts. |
+| **Cash to collect** | Admin dashboard figure: total of COD orders not delivered yet. It becomes revenue on delivery. |
+| **Payment status** | `PENDING` (COD, cash not collected yet), `CAPTURED` (money received), `REFUNDED` (given back), `VOIDED` (COD cancelled before any cash was paid). |
 | **Live search** | Results are fetched while the user types (debounced), with no need to press Search. |
 | **Debounce** | Waiting until the user stops typing for a short time before calling the API. |
 | **Subtotal** | Σ (unit price × quantity) for all items, before discount, tax and shipping. |
 | **Discount** | Amount taken off the subtotal by a coupon. Capped at the subtotal. |
 | **Taxable amount** | Subtotal − discount. VAT is 5% of this. |
-| **Total** | Taxable amount + VAT + delivery charge. The amount charged to bKash or card. |
+| **Total** | Taxable amount + VAT + delivery charge (+ ৳20 Cash on Delivery fee when paying cash). The amount charged to bKash or card, or collected in cash on delivery. |
 | **Coupon** | A code giving a PERCENT or FIXED discount, optionally with expiry, minimum order and usage limit. |
 | **Usage limit** | Maximum number of orders that may use a coupon across all customers. |
 | **Stock / inventory** | Units available to sell right now. |

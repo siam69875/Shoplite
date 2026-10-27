@@ -42,7 +42,7 @@ Amounts are displayed with Bangladeshi digit grouping: `৳1,00,000`.
 - **BR-CPN-08:** Percentage coupons are 1–100%. Fixed coupons are an amount in whole Taka. Percentage discounts are rounded to the nearest Taka.
 
 ## Pricing (PRC)
-- **BR-PRC-01:** Order of calculation: **subtotal → minus discount → VAT on the discounted amount → plus delivery charge = total.**
+- **BR-PRC-01:** Order of calculation: **subtotal → minus discount → VAT on the discounted amount → plus delivery charge (→ plus the Cash on Delivery fee, when paying cash) = total.**
 - **BR-PRC-02:** VAT is **5%**, calculated on the order's discounted subtotal and **rounded once at order level** to the nearest Taka (half up), not per line. Example: 3 × ৳145 = ৳435 → VAT ৳21.75 → ৳22.
 - **BR-PRC-03:** All amounts are calculated on the server. The client never sends prices or totals.
 - **BR-PRC-04:** The price charged is the product's price at checkout time; later price changes do not affect existing orders (order items store the unit price).
@@ -54,19 +54,27 @@ Amounts are displayed with Bangladeshi digit grouping: `৳1,00,000`.
 - **BR-CHK-01:** The delivery address needs a full name, a Bangladeshi mobile number (11 digits, `01` followed by 3–9, e.g. `01712345678`), an address line, a district from the supported list, and a **4-digit** postcode.
 
 ## Payments (PAY)
-- **BR-PAY-01:** Two payment methods: **bKash** and **Card**.
+- **BR-PAY-01:** Three payment methods: **bKash**, **Card** and **Cash on Delivery** (see COD rules below).
   - Card: number must be 16 digits (spaces and dashes are ignored), expiry `MM/YY` not in the past, CVC 3 digits.
   - bKash: wallet number must be a valid Bangladeshi mobile number. The 6-digit verification code must be correct (`123456` in the demo).
 - **BR-PAY-02:** A declined payment creates **no order**, changes **no stock**, uses **no coupon**, and keeps the cart unchanged.
-- **BR-PAY-03:** The amount charged equals the order total exactly.
-- **BR-PAY-04:** Only the payment method and the last 4 digits of the card or wallet number are stored.
-- **BR-PAY-05:** Refunds go back to the same method (card or bKash wallet).
+- **BR-PAY-03:** The amount charged (or, for Cash on Delivery, collected) equals the order total exactly.
+- **BR-PAY-04:** Only the payment method and the last 4 digits of the card or wallet number are stored (nothing for Cash on Delivery).
+- **BR-PAY-05:** Refunds go back to the same method (card or bKash wallet; cash for Cash on Delivery).
+
+## Cash on Delivery (COD)
+- **BR-COD-01:** A flat **৳20** Cash on Delivery fee is added after VAT. **No VAT on the fee.** Card and bKash orders have no fee. Example: ৳320 item → VAT ৳16 + delivery ৳60 + fee ৳20 = **৳416**.
+- **BR-COD-02:** COD is only for orders with a total **up to ৳10,000** (fee included). ৳10,000 is allowed, ৳10,001 is not.
+- **BR-COD-03:** COD is only available when delivering to **Dhaka, Gazipur, Narayanganj, Chattogram, Sylhet, Khulna or Rajshahi**.
+- **BR-COD-04:** Nothing is charged at checkout. The payment is `PENDING` until the order is **delivered**; then it becomes `CAPTURED` (the courier collected the cash).
+- **BR-COD-05:** Cancelling a COD order before delivery refunds **৳0** (payment becomes `VOIDED`), still returns the stock, and the email says no payment was taken.
+- **BR-COD-06:** The fee, the limit and the districts are checked on the **server**. The checkout page only previews them; a request that bypasses the page is still rejected (`COD_NOT_AVAILABLE`, `COD_LIMIT_EXCEEDED`).
 
 ## Orders (ORD)
 - **BR-ORD-01:** Status transitions allowed:
   `PAID → SHIPPED → DELIVERED → REFUNDED` and `PAID → CANCELLED`. No other transitions, no skipping.
 - **BR-ORD-02:** Customers can cancel their own order only while it is `PAID` (not yet shipped).
-- **BR-ORD-03:** Cancelling or refunding returns the **full amount paid** to the card.
+- **BR-ORD-03:** Cancelling or refunding returns the **full amount paid** to the payment method. An uncollected Cash on Delivery order has nothing to return (BR-COD-05).
 - **BR-ORD-04:** Refunds are only possible within **30 days** of delivery.
 - **BR-ORD-05:** Every status change is recorded in the order's status history and triggers exactly one customer email.
 
@@ -84,8 +92,9 @@ Amounts are displayed with Bangladeshi digit grouping: `৳1,00,000`.
 ## Notifications (NOT)
 - **BR-NOT-01:** Emails are sent for: registration, order paid, shipped, delivered, cancelled, refunded.
 - **BR-NOT-02:** The delivered email states the loyalty points earned. The cancelled and refunded emails state the refunded amount.
+- **BR-NOT-03:** For Cash on Delivery, the confirmation email asks the customer to pay the total in cash on delivery (it must not say "we charged"), and the delivered email confirms the cash was received.
 
 ## Admin reports (RPT)
-- **BR-RPT-01:** Revenue = sum of totals of orders in `PAID`, `SHIPPED` or `DELIVERED`. Cancelled and refunded orders are reported separately as "Refunded".
+- **BR-RPT-01:** Revenue = sum of totals of orders in `PAID`, `SHIPPED` or `DELIVERED` **whose payment is captured**. Cash on Delivery orders count only after delivery; until then they are shown as **"Cash to collect"**. Refunded = sum of amounts actually refunded on cancelled and refunded orders.
 - **BR-RPT-02:** VAT collected and discounts given use the same set of orders as revenue.
 - **BR-RPT-03:** Low-stock lists products at or below their threshold, lowest first.

@@ -4,6 +4,7 @@
 
 import { roundTaka } from '../../core/money.js';
 import { calculateDiscount } from '../coupons/coupons.service.js';
+import { COD_FEE, PAYMENT_METHODS } from '../payments/payments.service.js';
 import { calculateShipping } from '../shipping/shipping.service.js';
 
 export const TAX_RATE = 0.05; // VAT
@@ -15,19 +16,22 @@ export function lineTotal(unitPrice, quantity) {
 /**
  * @param {{unitPrice:number, quantity:number}[]} items
  * @param {object|null} coupon  a validated coupon row, or null
+ * @param {{paymentMethod?: string}} options  the chosen payment method, when known (checkout)
  *
  * Order of operations (BR-PRC-01):
  *   subtotal → minus coupon discount → VAT on the discounted amount → plus delivery charge
+ *   → plus the Cash on Delivery fee when paying cash (no VAT on the fee, BR-COD-01)
  * VAT is rounded once, on the order level, to the nearest Taka (BR-PRC-02).
  */
-export function calculateTotals(items, coupon = null) {
+export function calculateTotals(items, coupon = null, { paymentMethod } = {}) {
   const subtotal = items.reduce((sum, i) => sum + lineTotal(i.unitPrice, i.quantity), 0);
   const discount = calculateDiscount(coupon, subtotal);
   const taxable = subtotal - discount;
   const tax = roundTaka(taxable * TAX_RATE);
   const itemCount = items.reduce((sum, i) => sum + i.quantity, 0);
   const shipping = calculateShipping({ itemCount, subtotalAfterDiscount: taxable });
-  const total = taxable + tax + shipping;
+  const codFee = paymentMethod === PAYMENT_METHODS.COD && itemCount > 0 ? COD_FEE : 0;
+  const total = taxable + tax + shipping + codFee;
 
-  return { subtotal, discount, tax, shipping, total, itemCount };
+  return { subtotal, discount, tax, shipping, codFee, total, itemCount };
 }

@@ -6,7 +6,7 @@ import { TAKA_PER_POINT } from '../src/modules/loyalty/loyalty.service.js';
 import { REFUND_WINDOW_DAYS } from '../src/modules/orders/order-status.js';
 import { TAX_RATE } from '../src/modules/pricing/pricing.service.js';
 import { DELIVERY_CHARGE } from '../src/modules/shipping/shipping.service.js';
-import { BKASH_TEST_OTP, PAYMENT_METHOD_INFO, PAYMENT_METHODS } from '../src/modules/payments/payments.service.js';
+import { BKASH_TEST_OTP, COD_DISTRICTS, COD_FEE, COD_MAX_TOTAL, PAYMENT_METHOD_INFO, PAYMENT_METHODS } from '../src/modules/payments/payments.service.js';
 import { as, freshApp, loginAdmin, newCustomer, productId } from './helpers.js';
 
 test('store info is public and matches the values the server enforces', async () => {
@@ -17,6 +17,7 @@ test('store info is public and matches the values the server enforces', async ()
     storeName: 'ShopLite',
     region: 'Bangladesh',
     paymentMethods: PAYMENT_METHOD_INFO,
+    cod: { fee: COD_FEE, maxOrderTotal: COD_MAX_TOTAL, districts: COD_DISTRICTS },
     refundNote: 'Full refund after delivery',
     deliveryCharge: DELIVERY_CHARGE,
     deliveryDays: '2–5',

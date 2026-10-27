@@ -4,7 +4,7 @@ These end-to-end journeys must keep working after every change. When a PR touche
 a flow's path, that flow must be re-tested.
 
 ## FLOW-01: Purchase
-**Path:** Log in → Live search / browse → Product page → Add to cart → Cart → Apply coupon → Checkout (address + bKash or card) → Order confirmation → "Order confirmed" email
+**Path:** Log in → Live search / browse → Product page → Add to cart → Cart → Apply coupon → Checkout (address + bKash, card or Cash on Delivery) → Order confirmation → "Order confirmed" email
 **Modules:** Auth, Catalog, Inventory, Cart, Coupons, Pricing, Shipping, Checkout, Payments, Orders, Notifications
 **Must be true at the end:** order is `PAID`, totals equal what the cart showed (INV-01), stock reduced (INV-02), coupon use counted, cart empty, one email.
 
@@ -17,6 +17,11 @@ a flow's path, that flow must be re-tested.
 **Path:** Customer opens a `PAID` order → Cancel → Confirm
 **Modules:** Orders, Payments, Inventory, Notifications, Reports
 **Must be true at the end:** status `CANCELLED`, payment `REFUNDED` for the full amount, stock returned, "cancelled" email, order moves from Revenue to Refunded in reports.
+
+## FLOW-10: Cash on Delivery
+**Path:** Customer checks out with Cash on Delivery → Order confirmation ("pay in cash" email) → Admin marks shipped → Admin marks delivered (cash collected) — or the customer cancels before shipping
+**Modules:** Checkout, Pricing, Payments, Inventory, Orders, Notifications, Loyalty, Reports, Store settings
+**Must be true at the end:** ৳20 fee on the order and no VAT on it (BR-COD-01); limit and district enforced by the server (BR-COD-02, 03); payment `PENDING` until delivery, then `CAPTURED` (BR-COD-04); revenue counts it only after delivery, "Cash to collect" before (BR-RPT-01); a cancelled COD order refunds ৳0 and restocks (BR-COD-05).
 
 ## FLOW-04: Refund after delivery
 **Path:** Admin opens a `DELIVERED` order (≤ 30 days) → Refund

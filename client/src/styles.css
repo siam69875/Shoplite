@@ -449,7 +449,7 @@ input[type='search']::-webkit-search-cancel-button { -webkit-appearance: none; a
 .checkout-steps li.done::after { background: var(--green); }
 .checkout-steps li.current { color: var(--ink); }
 .checkout-steps li.current::before { background: var(--ink); color: #fff; }
-.pay-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px; }
+.pay-tabs { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 18px; }
 .pay-tab { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 14px; border-radius: 14px; border: 2px solid var(--line); background: #fff; font: inherit; font-weight: 600; cursor: pointer; transition: all 0.2s var(--ease); color: var(--ink); }
 .pay-tab:hover { transform: translateY(-2px); }
 .pay-tab.active { border-color: var(--green); background: var(--green-50); color: var(--green); box-shadow: 0 0 0 4px rgba(0, 106, 78, 0.08); }

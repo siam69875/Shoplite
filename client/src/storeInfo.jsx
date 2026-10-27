@@ -33,6 +33,7 @@ export function useStoreInfo() {
     paymentBrands: joinWords(paymentMethods.flatMap((m) => m.brands), 'or'),
     methodInfo: (code) => paymentMethods.find((m) => m.method === code) ?? { method: code, label: code, account: 'account', brands: [] },
     maxQtyPerItem: info?.maxQtyPerItem ?? 1,
+    cod: info?.cod ?? null,
     offers: info?.offers ?? {},
     welcomeOffer: info ? info.offers[info.welcomeCoupon] ?? null : null,
     delivery: money(info?.deliveryCharge),

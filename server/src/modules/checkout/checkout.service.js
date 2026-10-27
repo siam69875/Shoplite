@@ -1,6 +1,6 @@
 // Checkout orchestrates the purchase across modules:
 //   Cart → Inventory (availability) → Coupons (re-validate) → Pricing (totals)
-//   → Payments (charge) → Inventory (deduct) → Coupons (redeem) → Orders (create) → Cart (clear)
+//   → Payments (charge now, or record a pending cash payment for COD) → Inventory (deduct) → Coupons (redeem) → Orders (create) → Cart (clear)
 // Everything runs in one transaction: any failure leaves no order, no charge and no stock change.
 
 import { badRequest } from '../../core/errors.js';
@@ -10,7 +10,7 @@ import { clearCart, getCart } from '../cart/cart.service.js';
 import { redeemCoupon, validateCoupon } from '../coupons/coupons.service.js';
 import { assertAvailable, decrementStock } from '../inventory/inventory.service.js';
 import { createOrder, getOrder } from '../orders/orders.service.js';
-import { BD_MOBILE_RE, chargePayment } from '../payments/payments.service.js';
+import { BD_MOBILE_RE, PAYMENT_METHODS, assertCodAllowed, chargePayment } from '../payments/payments.service.js';
 import { calculateTotals } from '../pricing/pricing.service.js';
 
 // BR-CHK-01: Bangladeshi delivery address — mobile number 01XXXXXXXXX, 4-digit postcode, a known district.
@@ -47,7 +47,8 @@ export function placeOrder(userId, { shippingAddress, payment } = {}) {
     }
 
     const coupon = cart.couponCode ? validateCoupon(cart.couponCode, cart.totals.subtotal) : null;
-    const totals = calculateTotals(cart.items, coupon);
+    const totals = calculateTotals(cart.items, coupon, { paymentMethod: payment?.method });
+    if (payment?.method === PAYMENT_METHODS.COD) assertCodAllowed({ total: totals.total, district: address.city });
 
     const charge = chargePayment({ userId, amount: totals.total, payment });
 

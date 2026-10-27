@@ -21,6 +21,9 @@ Reset with `npm run seed`. The database is re-created with the data below. All m
 | bKash | number ending `000`, e.g. 01712345000 | "Insufficient bKash balance" (HTTP 402) |
 | bKash | wrong code, e.g. `000000` | "Incorrect bKash verification code" (HTTP 400) |
 | bKash | `01212345678` (prefix 012 not valid), `0171234567` (10 digits) | Validation error |
+| Cash on Delivery | any address in Dhaka, Gazipur, Narayanganj, Chattogram, Sylhet, Khulna or Rajshahi, total ≤ ৳10,000 | Order placed, payment `PENDING`, ৳20 fee |
+| Cash on Delivery | district Bogura (or any other district) | "Cash on Delivery is not available in Bogura" (HTTP 400) |
+| Cash on Delivery | Smartphone ৳18,999 (total over ৳10,000) | "only available for orders up to ৳10,000" (HTTP 400) |
 
 ## Delivery address
 - Mobile number: `01712345678` (11 digits, starts with 013–019)
@@ -196,6 +199,7 @@ Stock is the value **after** seeding (seed orders have already been placed).
 - **Eid Special Cotton Panjabi ৳2,200**: a single item clears SAVE100 and BOISHAKH15 minimums.
 - **Smartphone ৳18,999**: 189 loyalty points; with BIG20 → discount ৳3,800.
 - **Dhakai Jamdani Saree ৳8,500 (MRP ৳9,500)**: shows −10% (10.5% rounded down).
+- **Pure Mustard Oil ৳320 with Cash on Delivery**: VAT ৳16 + delivery ৳60 + COD fee ৳20 = **৳416** (card or bKash: ৳396).
 
 ## Boundary values worth knowing
 - Quantity: 0, 1, 10, 11
@@ -206,4 +210,5 @@ Stock is the value **after** seeding (seed orders have already been placed).
 - SAVE100 minimum: subtotal ৳999 vs ৳1,000
 - Mobile number: 10, 11, 12 digits; prefixes 012 vs 013 vs 019
 - Postcode: 3, 4, 5 digits
+- Cash on Delivery total: ৳10,000 (allowed) vs ৳10,001 (rejected)
 - Search page size: `limit` 0, 1, 100, 101 (capped at 100)

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { CreditCard, Lock, MapPin, Smartphone } from 'lucide-react';
+import { Banknote, CreditCard, Lock, MapPin, Smartphone } from 'lucide-react';
 import { api, money } from '../api.js';
 import { ErrorMessage, Totals } from '../components/ui.jsx';
 import { useSession } from '../session.jsx';
@@ -8,7 +8,7 @@ import { useStoreInfo } from '../storeInfo.jsx';
 import { useToast } from '../toast.jsx';
 
 // Checkout shows a tab for every method the server accepts; each method has its own form below.
-const PAY_ICON = { BKASH: Smartphone, CARD: CreditCard };
+const PAY_ICON = { BKASH: Smartphone, CARD: CreditCard, COD: Banknote };
 
 export default function CheckoutPage() {
   const store = useStoreInfo();
@@ -36,7 +36,7 @@ export default function CheckoutPage() {
     e.preventDefault();
     setBusy(true);
     setError(null);
-    const payment = method === 'CARD' ? { method, ...card } : { method, ...bkash };
+    const payment = method === 'CARD' ? { method, ...card } : method === 'BKASH' ? { method, ...bkash } : { method };
     try {
       const { order } = await api('/checkout', { method: 'POST', body: { shippingAddress: address, payment } });
       await refreshCart();
@@ -50,6 +50,16 @@ export default function CheckoutPage() {
 
   if (!cart) return <div className="container"><div className="skeleton skeleton-hero" /></div>;
   if (cart.items.length === 0) return <Navigate to="/cart" replace />;
+
+  // Cash on Delivery: the server adds the fee and enforces the limits; the page only previews them.
+  const cod = store.cod;
+  const isCod = method === 'COD';
+  const codFee = isCod && cod ? cod.fee : 0;
+  const totals = { ...cart.totals, codFee, total: cart.totals.total + codFee };
+  const codProblem = !isCod || !cod ? null
+    : !cod.districts.includes(address.city) ? `Cash on Delivery is not available in ${address.city}. Please pay with bKash or card.`
+      : totals.total > cod.maxOrderTotal ? `Cash on Delivery is only available for orders up to ${money(cod.maxOrderTotal)}. Please pay with bKash or card.`
+        : null;
 
   const field = (obj, set, key, label, props = {}) => (
     <label>
@@ -110,6 +120,16 @@ export default function CheckoutPage() {
                 </div>
                 {otpSent && <p className="small hint">📩 Demo: the code is <code>{store.demoBkashOtp}</code>. Numbers ending in <code>000</code> have insufficient balance.</p>}
               </div>
+            ) : isCod ? (
+              <div className="pay-panel cod-panel" data-testid="cod-panel">
+                <p>Pay <strong>{money(totals.total)}</strong> in cash to the courier when your order arrives. Nothing is charged now.</p>
+                {cod && (
+                  <p className="small hint">
+                    Cash on Delivery fee {money(cod.fee)} · orders up to {money(cod.maxOrderTotal)} · available in {cod.districts.join(', ')}.
+                  </p>
+                )}
+                {codProblem && <p className="alert alert-error small" data-testid="cod-unavailable">{codProblem}</p>}
+              </div>
             ) : (
               <div className="pay-panel">
                 {field(card, setCard, 'cardNumber', 'Card number', { inputMode: 'numeric', placeholder: '4242 4242 4242 4242' })}
@@ -132,10 +152,10 @@ export default function CheckoutPage() {
           </ul>
           {cart.couponCode && !cart.couponError && <p className="small">🎟️ Coupon <strong>{cart.couponCode}</strong> applied</p>}
           {cart.couponError && <p className="alert alert-error small">{cart.couponCode}: {cart.couponError}</p>}
-          <Totals totals={cart.totals} />
+          <Totals totals={totals} />
           <ErrorMessage error={error} />
-          <button type="submit" className={`btn btn-block ${method === 'BKASH' ? 'btn-bkash' : 'btn-primary'}`} disabled={busy} data-testid="place-order">
-            {busy ? 'Processing…' : `Pay ${money(cart.totals.total)}${method === 'BKASH' ? ` with ${store.methodInfo(method).label}` : ''}`}
+          <button type="submit" className={`btn btn-block ${method === 'BKASH' ? 'btn-bkash' : 'btn-primary'}`} disabled={busy || Boolean(codProblem)} data-testid="place-order">
+            {busy ? 'Processing…' : isCod ? `Place order · pay ${money(totals.total)} on delivery` : `Pay ${money(totals.total)}${method === 'BKASH' ? ` with ${store.methodInfo(method).label}` : ''}`}
           </button>
           <p className="muted small center"><Lock size={12} /> Secure checkout. Demo payments only.</p>
         </aside>

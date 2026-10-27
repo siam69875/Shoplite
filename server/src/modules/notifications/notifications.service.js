@@ -14,8 +14,9 @@ function saveNotification({ userId, toEmail, event, subject, body }) {
 
 export function sendOrderEmail({ orderId }, event) {
   const order = one(
-    `SELECT o.*, u.name AS customer_name, u.email AS customer_email
-     FROM orders o JOIN users u ON u.id = o.user_id WHERE o.id = ?`,
+    `SELECT o.*, u.name AS customer_name, u.email AS customer_email,
+            p.method AS payment_method, p.status AS payment_status, p.refunded_amount
+     FROM orders o JOIN users u ON u.id = o.user_id LEFT JOIN payments p ON p.id = o.payment_id WHERE o.id = ?`,
     orderId,
   );
   const { subject, body } = ORDER_TEMPLATES[event](order);

@@ -4,19 +4,39 @@
 //        any 16-digit card ending 0002   → declined
 // BKASH  any valid BD mobile number + OTP 123456 → approved
 //        a wallet number ending 000      → insufficient balance
+// COD    nothing is charged at checkout; the payment stays PENDING until the order is delivered
 
 import { AppError, badRequest, conflict, notFound } from '../../core/errors.js';
+import { formatMoney } from '../../core/money.js';
 import { one, run } from '../../db/connection.js';
 
-export const PAYMENT_STATUS = { CAPTURED: 'CAPTURED', REFUNDED: 'REFUNDED' };
-export const PAYMENT_METHODS = { CARD: 'CARD', BKASH: 'BKASH' };
+// PENDING: cash on delivery not collected yet. VOIDED: a pending payment that was cancelled (nothing to refund).
+export const PAYMENT_STATUS = { PENDING: 'PENDING', CAPTURED: 'CAPTURED', REFUNDED: 'REFUNDED', VOIDED: 'VOIDED' };
+export const PAYMENT_METHODS = { CARD: 'CARD', BKASH: 'BKASH', COD: 'COD' };
 
 // How each accepted method is named to shoppers, in the order the storefront shows them.
 // Adding a method here makes it appear in the header, footer, home page and checkout.
 export const PAYMENT_METHOD_INFO = [
   { method: PAYMENT_METHODS.BKASH, label: 'bKash', account: 'bKash account', brands: ['bKash'] },
   { method: PAYMENT_METHODS.CARD, label: 'Card', account: 'card', brands: ['Visa', 'Mastercard'] },
+  { method: PAYMENT_METHODS.COD, label: 'Cash on Delivery', account: 'cash payment', brands: ['Cash on Delivery'] },
 ];
+
+// BR-COD-01: a flat Cash on Delivery fee, added after VAT (no VAT on the fee).
+export const COD_FEE = 20;
+// BR-COD-02: COD only for orders up to this total (fee included).
+export const COD_MAX_TOTAL = 10000;
+// BR-COD-03: districts where couriers collect cash.
+export const COD_DISTRICTS = ['Dhaka', 'Gazipur', 'Narayanganj', 'Chattogram', 'Sylhet', 'Khulna', 'Rajshahi'];
+
+export function assertCodAllowed({ total, district }) {
+  if (!COD_DISTRICTS.includes(district)) {
+    throw new AppError(400, 'COD_NOT_AVAILABLE', `Cash on Delivery is not available in ${district}. Please pay with bKash or card.`);
+  }
+  if (total > COD_MAX_TOTAL) {
+    throw new AppError(400, 'COD_LIMIT_EXCEEDED', `Cash on Delivery is only available for orders up to ${formatMoney(COD_MAX_TOTAL)}. Please pay with bKash or card.`);
+  }
+}
 export const BKASH_TEST_OTP = '123456';
 
 export const BD_MOBILE_RE = /^01[3-9]\d{8}$/;
@@ -59,23 +79,37 @@ function authorize(payment) {
     }
     return { method, last4: number.slice(-4) };
   }
-  throw badRequest('Payment method must be CARD or BKASH');
+  if (method === PAYMENT_METHODS.COD) return { method, last4: '' };
+  throw badRequest('Payment method must be CARD, BKASH or COD');
 }
 
 export function chargePayment({ userId, amount, payment = {} }) {
   const { method, last4 } = authorize(payment);
   const { lastId } = run(
     'INSERT INTO payments (user_id, amount, status, method, account_last4) VALUES (?, ?, ?, ?, ?)',
-    userId, amount, PAYMENT_STATUS.CAPTURED, method, last4,
+    userId, amount, method === PAYMENT_METHODS.COD ? PAYMENT_STATUS.PENDING : PAYMENT_STATUS.CAPTURED, method, last4,
   );
   return getPayment(lastId);
 }
 
-// Full refund of the captured amount.
+// BR-COD-04: the courier collects the cash when the order is delivered.
+export function collectPayment(paymentId) {
+  const payment = getPayment(paymentId);
+  if (payment.status === PAYMENT_STATUS.PENDING) {
+    run('UPDATE payments SET status = ? WHERE id = ?', PAYMENT_STATUS.CAPTURED, paymentId);
+  }
+  return getPayment(paymentId);
+}
+
+// Full refund of the captured amount. An uncollected cash payment is voided instead (BR-COD-05).
 export function refundPayment(paymentId) {
   const payment = getPayment(paymentId);
-  if (payment.status === PAYMENT_STATUS.REFUNDED) {
+  if (payment.status === PAYMENT_STATUS.REFUNDED || payment.status === PAYMENT_STATUS.VOIDED) {
     throw conflict('ALREADY_REFUNDED', 'This payment has already been refunded');
+  }
+  if (payment.status === PAYMENT_STATUS.PENDING) {
+    run('UPDATE payments SET status = ?, refunded_amount = 0 WHERE id = ?', PAYMENT_STATUS.VOIDED, paymentId);
+    return getPayment(paymentId);
   }
   run('UPDATE payments SET status = ?, refunded_amount = amount WHERE id = ?', PAYMENT_STATUS.REFUNDED, paymentId);
   return getPayment(paymentId);

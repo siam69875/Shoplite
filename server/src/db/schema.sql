@@ -67,8 +67,8 @@ CREATE TABLE IF NOT EXISTS payments (
   id             INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id        INTEGER NOT NULL REFERENCES users(id),
   amount   INTEGER NOT NULL CHECK (amount >= 0),
-  status         TEXT    NOT NULL CHECK (status IN ('CAPTURED', 'REFUNDED')),
-  method         TEXT    NOT NULL CHECK (method IN ('CARD', 'BKASH')),
+  status         TEXT    NOT NULL CHECK (status IN ('PENDING', 'CAPTURED', 'REFUNDED', 'VOIDED')),
+  method         TEXT    NOT NULL CHECK (method IN ('CARD', 'BKASH', 'COD')),
   account_last4  TEXT    NOT NULL,
   refunded_amount INTEGER NOT NULL DEFAULT 0,
   created_at     TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
@@ -82,6 +82,7 @@ CREATE TABLE IF NOT EXISTS orders (
   discount   INTEGER NOT NULL DEFAULT 0,
   tax        INTEGER NOT NULL,
   shipping   INTEGER NOT NULL,
+  cod_fee    INTEGER NOT NULL DEFAULT 0,
   total      INTEGER NOT NULL,
   coupon_code      TEXT,
   shipping_address TEXT    NOT NULL,

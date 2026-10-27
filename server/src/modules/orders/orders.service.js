@@ -1,7 +1,7 @@
 import { badRequest, conflict, notFound } from '../../core/errors.js';
 import { eventBus } from '../../core/eventBus.js';
 import { many, nowIso, one, run, transaction } from '../../db/connection.js';
-import { getPayment, refundPayment } from '../payments/payments.service.js';
+import { collectPayment, getPayment, refundPayment } from '../payments/payments.service.js';
 import { ROLES } from '../users/users.repository.js';
 import { ORDER_STATUS, REFUND_WINDOW_DAYS, STATUS_EVENT, canTransition } from './order-status.js';
 
@@ -18,6 +18,7 @@ function toOrderSummary(o) {
     discount: o.discount,
     tax: o.tax,
     shipping: o.shipping,
+    codFee: o.cod_fee,
     total: o.total,
     couponCode: o.coupon_code,
     pointsAwarded: o.points_awarded,
@@ -92,11 +93,11 @@ function recordHistory(orderId, from, to, actorId) {
 export function createOrder({ userId, items, totals, couponCode, shippingAddress, paymentId }) {
   return transaction(() => {
     const { lastId: orderId } = run(
-      `INSERT INTO orders (user_id, status, subtotal, discount, tax, shipping,
+      `INSERT INTO orders (user_id, status, subtotal, discount, tax, shipping, cod_fee,
                            total, coupon_code, shipping_address, payment_id)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       userId, ORDER_STATUS.PAID, totals.subtotal, totals.discount, totals.tax,
-      totals.shipping, totals.total, couponCode, JSON.stringify(shippingAddress), paymentId,
+      totals.shipping, totals.codFee ?? 0, totals.total, couponCode, JSON.stringify(shippingAddress), paymentId,
     );
     for (const item of items) {
       run(
@@ -130,10 +131,12 @@ export function changeStatus(orderId, toStatus, actor) {
       throw conflict('REFUND_WINDOW_EXPIRED', `Refunds are only possible within ${REFUND_WINDOW_DAYS} days of delivery`);
     }
 
-    // BR-ORD-03: cancelling or refunding returns the full amount paid.
+    // BR-ORD-03: cancelling or refunding returns the full amount paid (nothing, for uncollected cash).
     if (toStatus === ORDER_STATUS.CANCELLED || toStatus === ORDER_STATUS.REFUNDED) {
       refundPayment(order.payment_id);
     }
+    // BR-COD-04: cash on delivery is collected when the order is delivered.
+    if (toStatus === ORDER_STATUS.DELIVERED) collectPayment(order.payment_id);
 
     const now = nowIso();
     run(
